@@ -1,6 +1,7 @@
 ﻿package com.example.todo.controller;
 
 import com.example.todo.entity.Todo;
+import com.example.todo.form.TodoForm;
 import com.example.todo.service.TodoService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -43,7 +44,7 @@ public class TodoController {
 
     @GetMapping("/todos/new")
     public String createForm(Model model) {
-        model.addAttribute("todo", new Todo());
+        model.addAttribute("todoForm", new TodoForm());
         model.addAttribute("mode", "create");
         return "create";
     }
@@ -51,18 +52,18 @@ public class TodoController {
     @GetMapping("/todos/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         Todo todo = todoService.get(id);
-        model.addAttribute("todo", todo);
+        model.addAttribute("todoForm", toForm(todo));
         model.addAttribute("mode", "edit");
         return "create";
     }
 
     @PostMapping("/todos/confirm")
     public String confirm(
-        @Valid @ModelAttribute("todo") Todo todo,
+        @Valid @ModelAttribute("todoForm") TodoForm todoForm,
         BindingResult bindingResult,
         Model model
     ) {
-        String mode = todo.getId() == null ? "create" : "edit";
+        String mode = todoForm.getId() == null ? "create" : "edit";
         model.addAttribute("mode", mode);
         if (bindingResult.hasErrors()) {
             return "create";
@@ -71,22 +72,22 @@ public class TodoController {
     }
 
     @PostMapping("/todos/back")
-    public String back(@ModelAttribute("todo") Todo todo, @RequestParam("mode") String mode, Model model) {
+    public String back(@ModelAttribute("todoForm") TodoForm todoForm, @RequestParam("mode") String mode, Model model) {
         model.addAttribute("mode", mode);
         return "create";
     }
 
     @PostMapping("/todos/complete")
     public String complete(
-        @ModelAttribute("todo") Todo todo,
+        @ModelAttribute("todoForm") TodoForm todoForm,
         @RequestParam("mode") String mode,
         RedirectAttributes redirectAttributes
     ) {
         Todo saved;
         if ("edit".equals(mode)) {
-            saved = todoService.update(todo.getId(), todo);
+            saved = todoService.update(todoForm.getId(), toEntity(todoForm));
         } else {
-            saved = todoService.create(todo);
+            saved = todoService.create(toEntity(todoForm));
         }
         redirectAttributes.addFlashAttribute("todo", saved);
         return "redirect:/todos/complete";
@@ -105,5 +106,23 @@ public class TodoController {
     public String delete(@PathVariable Long id) {
         todoService.delete(id);
         return "redirect:/todos";
+    }
+
+    private TodoForm toForm(Todo todo) {
+        TodoForm form = new TodoForm();
+        form.setId(todo.getId());
+        form.setAuthor(todo.getAuthor());
+        form.setTitle(todo.getTitle());
+        form.setDetail(todo.getDetail());
+        return form;
+    }
+
+    private Todo toEntity(TodoForm form) {
+        Todo todo = new Todo();
+        todo.setId(form.getId());
+        todo.setAuthor(form.getAuthor());
+        todo.setTitle(form.getTitle());
+        todo.setDetail(form.getDetail());
+        return todo;
     }
 }

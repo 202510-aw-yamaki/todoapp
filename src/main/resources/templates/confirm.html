@@ -18,33 +18,33 @@
 <table>
     <tr>
         <th>登録者</th>
-        <td th:text="${todo.author}"></td>
+        <td th:text="${todoForm.author}"></td>
     </tr>
     <tr>
         <th>タイトル</th>
-        <td th:text="${todo.title}"></td>
+        <td th:text="${todoForm.title}"></td>
     </tr>
     <tr>
         <th>詳細</th>
-        <td th:text="${todo.detail}"></td>
+        <td th:text="${todoForm.detail}"></td>
     </tr>
 </table>
 
 <div class="actions">
     <form th:action="@{/todos/complete}" method="post">
-        <input type="hidden" name="id" th:value="${todo.id}" />
-        <input type="hidden" name="author" th:value="${todo.author}" />
-        <input type="hidden" name="title" th:value="${todo.title}" />
-        <input type="hidden" name="detail" th:value="${todo.detail}" />
+        <input type="hidden" name="id" th:value="${todoForm.id}" />
+        <input type="hidden" name="author" th:value="${todoForm.author}" />
+        <input type="hidden" name="title" th:value="${todoForm.title}" />
+        <input type="hidden" name="detail" th:value="${todoForm.detail}" />
         <input type="hidden" name="mode" th:value="${mode}" />
         <button type="submit" th:text="${mode == 'edit'} ? '更新' : '登録'"></button>
     </form>
 
     <form th:action="@{/todos/back}" method="post">
-        <input type="hidden" name="id" th:value="${todo.id}" />
-        <input type="hidden" name="author" th:value="${todo.author}" />
-        <input type="hidden" name="title" th:value="${todo.title}" />
-        <input type="hidden" name="detail" th:value="${todo.detail}" />
+        <input type="hidden" name="id" th:value="${todoForm.id}" />
+        <input type="hidden" name="author" th:value="${todoForm.author}" />
+        <input type="hidden" name="title" th:value="${todoForm.title}" />
+        <input type="hidden" name="detail" th:value="${todoForm.detail}" />
         <input type="hidden" name="mode" th:value="${mode}" />
         <button type="submit">修正</button>
     </form>

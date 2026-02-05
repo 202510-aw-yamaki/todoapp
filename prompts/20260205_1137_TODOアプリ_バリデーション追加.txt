@@ -1,0 +1,73 @@
+﻿【指示】
+- TodoFormクラスを作成し、author/title/detailにバリデーションを付与する
+- Controllerで@ValidとBindingResultを使用してバリデーションを実行する
+- エラー時は入力画面に戻り、エラーメッセージを表示する
+- Thymeleafで各フィールドの下に赤字でエラーメッセージを表示する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- TodoFormにauthor/title/detailのバリデーションが実装されている
+- ControllerがTodoFormで@Valid + BindingResultを使用している
+- 入力エラー時に登録画面へ戻り、エラーメッセージが表示される
+- Thymeleafで各フィールドの下に赤字でエラーメッセージが表示される
+
+【非対象（今回はやらないこと）】
+- 認証・認可
+- 画面デザインの作り込み
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/form/TodoForm.java
+- 変更したファイル:
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/entity/Todo.java
+  - src/main/resources/templates/create.html
+  - src/main/resources/templates/confirm.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- TodoFormで入力バリデーションを管理し、Controllerで@Valid実行
+- create/confirm画面をTodoFormに切り替え
+- detailの最大文字数を500に統一
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- http://localhost:8080/todos/new にアクセス
+- 必須項目未入力や文字数超過でエラーメッセージが赤字で表示されること
+- エラー時に入力画面へ戻ること
+
+【説明】
+- 入力バリデーションの責務をFormクラスに分離し、画面との結合を明確化
+
+【その後の修正】
+・問題点
+- 既存はEntityに直接バリデーションを付けていたため、画面用の制約管理が分離されていなかった
+
+・修正指示
+- TodoFormを導入し、ControllerとThymeleafをFormベースに変更
+- detailの上限を500文字に統一
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/form/TodoForm.java
+- 変更したファイル:
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/entity/Todo.java
+  - src/main/resources/templates/create.html
+  - src/main/resources/templates/confirm.html
+- 削除したファイル:
+  - （なし）
+
+【確認結果】
+- 登録画面で必須/文字数エラーが表示され、エラー時に入力画面へ戻ることを確認

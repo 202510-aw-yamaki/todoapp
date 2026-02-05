@@ -15,7 +15,7 @@
 <body>
 <h1 th:text="${mode == 'edit'} ? 'ToDo編集' : 'ToDo登録'"></h1>
 
-<form th:action="@{/todos/confirm}" th:object="${todo}" method="post">
+<form th:action="@{/todos/confirm}" th:object="${todoForm}" method="post">
     <input type="hidden" th:field="*{id}" />
     <table>
         <tr>

@@ -5,6 +5,7 @@ import com.example.todo.form.TodoForm;
 import com.example.todo.service.TodoService;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,14 +34,23 @@ public class TodoController {
     public String index(
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
+        @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+        @RequestParam(name = "size", required = false, defaultValue = "10") int size,
         Model model
     ) {
         String safeSort = todoService.normalizeSort(sort);
-        List<Todo> todos = todoService.list(keyword, safeSort);
+        int safeSize = todoService.resolveSize(size);
+        Page<Todo> todoPage = todoService.list(keyword, safeSort, page, safeSize);
+        List<Todo> todos = todoPage.getContent();
         model.addAttribute("todos", todos);
         model.addAttribute("q", keyword);
         model.addAttribute("sort", safeSort);
-        model.addAttribute("count", todos.size());
+        model.addAttribute("count", todoPage.getTotalElements());
+        model.addAttribute("page", todoPage.getNumber());
+        model.addAttribute("size", todoPage.getSize());
+        model.addAttribute("totalPages", todoPage.getTotalPages());
+        model.addAttribute("start", todos.isEmpty() ? 0 : (todoPage.getNumber() * todoPage.getSize() + 1));
+        model.addAttribute("end", todos.isEmpty() ? 0 : (todoPage.getNumber() * todoPage.getSize() + todos.size()));
         return "index";
     }
 
@@ -105,8 +115,27 @@ public class TodoController {
     }
 
     @PostMapping("/todos/{id}/delete")
-    public String delete(@PathVariable Long id) {
+    public String delete(
+        @PathVariable Long id,
+        @RequestParam(name = "q", required = false) String keyword,
+        @RequestParam(name = "sort", required = false) String sort,
+        @RequestParam(name = "page", required = false) Integer page,
+        @RequestParam(name = "size", required = false) Integer size,
+        RedirectAttributes redirectAttributes
+    ) {
         todoService.delete(id);
+        if (keyword != null) {
+            redirectAttributes.addAttribute("q", keyword);
+        }
+        if (sort != null) {
+            redirectAttributes.addAttribute("sort", sort);
+        }
+        if (page != null) {
+            redirectAttributes.addAttribute("page", page);
+        }
+        if (size != null) {
+            redirectAttributes.addAttribute("size", size);
+        }
         return "redirect:/todos";
     }
 
@@ -115,6 +144,8 @@ public class TodoController {
         @PathVariable Long id,
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
+        @RequestParam(name = "page", required = false) Integer page,
+        @RequestParam(name = "size", required = false) Integer size,
         RedirectAttributes redirectAttributes
     ) {
         todoService.toggleCompleted(id);
@@ -123,6 +154,12 @@ public class TodoController {
         }
         if (sort != null) {
             redirectAttributes.addAttribute("sort", sort);
+        }
+        if (page != null) {
+            redirectAttributes.addAttribute("page", page);
+        }
+        if (size != null) {
+            redirectAttributes.addAttribute("size", size);
         }
         return "redirect:/todos";
     }

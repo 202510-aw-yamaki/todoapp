@@ -1,0 +1,83 @@
+﻿【指示】
+- 一覧画面にページネーションを追加する
+- デフォルトは1ページ10件
+- 1ページあたりの件数を10/20/30/50/100から選択できる
+- 前へ/次へボタン、ページ番号リンクを表示する
+- 現在ページをハイライト表示する
+- 総件数と表示範囲を表示する（例：全50件中 1-10件）
+- 検索条件とページネーションを組み合わせる
+- MyBatisでLIMIT/OFFSETを使用し、ORDER BYはホワイトリストで安全に制御する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- 1ページあたり件数が選択できる
+- 前へ/次へ/ページ番号が表示される
+- 現在ページがハイライトされる
+- 総件数と表示範囲が表示される
+- 検索条件とページングが同時に動作する
+
+【非対象（今回はやらないこと）】
+- 無限スクロール
+- 高度なページングUI
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - pom.xml
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- Page/Pageable相当のページング情報を導入
+- MyBatisで件数取得とLIMIT/OFFSETを実装
+- 一覧画面にページングUIを追加
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- http://localhost:8080/todos にアクセス
+- 件数選択、前へ/次へ/ページ番号が機能する
+- 総件数と表示範囲が正しく表示される
+- 検索キーワードとページングが両立する
+
+【説明】
+- MyBatisのcountとsearchPageでページングを実現
+- 一覧のUIでページリンクとサイズ選択を提供
+
+【その後の修正】
+・問題点
+- ページングが未実装で全件表示のみだった
+
+・修正指示
+- ページング要件に合わせてLIMIT/OFFSETとUIを追加
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - pom.xml
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【確認結果】
+- 件数選択とページ遷移ができ、検索条件も維持されることを確認

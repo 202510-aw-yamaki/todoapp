@@ -4,6 +4,9 @@ import com.example.todo.entity.Todo;
 import com.example.todo.repository.TodoMapper;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -16,9 +19,15 @@ public class TodoService {
         this.todoMapper = todoMapper;
     }
 
-    public List<Todo> list(String keyword, String sortKey) {
+    public Page<Todo> list(String keyword, String sortKey, int page, int size) {
         String safeSort = normalizeSort(sortKey);
-        return todoMapper.search(StringUtils.hasText(keyword) ? keyword : null, safeSort);
+        int safePage = Math.max(page, 0);
+        int safeSize = resolveSize(size);
+        int offset = safePage * safeSize;
+        String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
+        int total = todoMapper.count(safeKeyword);
+        List<Todo> rows = todoMapper.searchPage(safeKeyword, safeSort, safeSize, offset);
+        return new PageImpl<>(rows, PageRequest.of(safePage, safeSize), total);
     }
 
     public Todo get(Long id) {
@@ -69,6 +78,13 @@ public class TodoService {
                  "completedAsc",
                  "completedDesc" -> sortKey;
             default -> "createdAtDesc";
+        };
+    }
+
+    public int resolveSize(int size) {
+        return switch (size) {
+            case 10, 20, 30, 50, 100 -> size;
+            default -> 10;
         };
     }
 }

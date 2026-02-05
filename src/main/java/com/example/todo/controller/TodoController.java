@@ -39,6 +39,7 @@ public class TodoController {
         model.addAttribute("todos", todos);
         model.addAttribute("q", keyword);
         model.addAttribute("sort", sort);
+        model.addAttribute("count", todos.size());
         return "index";
     }
 

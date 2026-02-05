@@ -22,7 +22,7 @@
 
 <div class="topbar">
     <form method="get" th:action="@{/todos}" class="actions">
-        <input type="text" name="q" placeholder="タイトル/登録者で検索" th:value="${q}" />
+        <input type="text" name="q" placeholder="タイトルで検索" th:value="${q}" />
         <select name="sort">
             <option value="createdAtDesc" th:selected="${sort == null || sort == 'createdAtDesc'}">作成日（新しい順）</option>
             <option value="createdAtAsc" th:selected="${sort == 'createdAtAsc'}">作成日（古い順）</option>
@@ -30,9 +30,12 @@
             <option value="authorAsc" th:selected="${sort == 'authorAsc'}">登録者（昇順）</option>
         </select>
         <button type="submit">検索</button>
+        <a th:href="@{/todos}">クリア</a>
     </form>
     <a th:href="@{/todos/new}">新規登録</a>
 </div>
+
+<p class="muted" th:text="|検索結果: ${count}件|"></p>
 
 <table>
     <thead>

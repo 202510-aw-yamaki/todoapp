@@ -9,8 +9,7 @@
         FROM todo
         <where>
             <if test="keyword != null and keyword != ''">
-                (LOWER(title) LIKE CONCAT('%', LOWER(#{keyword}), '%')
-                 OR LOWER(author) LIKE CONCAT('%', LOWER(#{keyword}), '%'))
+                LOWER(title) LIKE CONCAT('%', LOWER(#{keyword}), '%')
             </if>
         </where>
         ORDER BY

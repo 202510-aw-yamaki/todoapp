@@ -1,0 +1,54 @@
+﻿【指示】
+- 一覧画面の上部にタイトル検索フォームを追加する
+- タイトルの部分一致検索（LIKE）を実装する
+- GETメソッドでURLパラメータにキーワードを含める
+- 検索キーワードを入力欄に保持する
+- 検索結果件数を表示する
+- 「クリア」リンクで全件表示に戻る
+- MyBatisの#{}を使ってSQLインジェクション対策を行う
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- タイトルの部分一致検索が動作する
+- 検索キーワードが入力欄に保持される
+- 検索結果件数が表示される
+- クリアリンクで全件表示に戻る
+- MyBatisの#{}でパラメータバインドしている
+
+【非対象（今回はやらないこと）】
+- 複数条件検索
+- 高度な検索UI
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/templates/index.html
+  - src/main/resources/mapper/TodoMapper.xml
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- タイトルのみのLIKE検索に変更
+- 検索結果件数表示とクリアリンクを追加
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- http://localhost:8080/todos?q=テスト で検索されること
+- 入力欄に検索キーワードが保持されること
+- 検索結果件数が表示されること
+- クリアリンクで全件表示に戻ること
+
+【説明】
+- MyBatis動的SQLでタイトルの部分一致検索を実装

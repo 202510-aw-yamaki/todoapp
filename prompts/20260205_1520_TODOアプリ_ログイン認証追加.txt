@@ -69,3 +69,21 @@
 【説明】
 - 開発用ユーザーは起動時に生成し、app.seed-user.enabledをfalseにすると無効化できる
 - 開発終了後はseedユーザー生成を停止し、パスワードが使えなくなるようにする
+
+【その後の修正】
+・問題点
+- ログイン成功後も/loginに戻り、/todosへ遷移できない
+
+・修正指示
+- AuthenticationProviderのprincipalをUserDetailsとして設定し、セッションに保持されるように修正
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/java/com/example/todo/config/SecurityConfig.java
+- 削除したファイル:
+  - （なし）
+
+【確認結果】
+- ログイン成功後に/todosへ遷移できることを確認

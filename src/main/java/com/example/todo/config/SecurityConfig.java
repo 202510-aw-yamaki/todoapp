@@ -38,7 +38,7 @@ public class SecurityConfig {
                 if (!passwordEncoder.matches(password, user.getPassword())) {
                     throw new BadCredentialsException("Bad credentials");
                 }
-                return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
+                return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             }
 
             @Override

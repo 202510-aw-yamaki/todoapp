@@ -10,5 +10,7 @@ public interface UserMapper {
 
     Long findIdByUsername(@Param("username") String username);
 
+    int updatePasswordAndRole(@Param("username") String username, @Param("password") String password, @Param("role") String role);
+
     int insert(AppUser user);
 }

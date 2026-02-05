@@ -58,6 +58,9 @@ public class TodoController {
         @AuthenticationPrincipal UserDetails principal,
         Model model
     ) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
         String safeSort = todoService.normalizeSort(sort);
         int safeSize = todoService.resolveSize(size);
         Boolean completed = resolveCompleted(status);
@@ -272,6 +275,9 @@ public class TodoController {
         @RequestParam(name = "status", required = false) String status,
         @AuthenticationPrincipal UserDetails principal
     ) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
         Boolean completed = resolveCompleted(status);
         Long userId = userService.findUserId(principal.getUsername());
         List<Todo> todos = todoService.listAll(keyword, sort, categoryId, authors, completed, userId);

@@ -1,4 +1,7 @@
 -- テスト用データ（最終的には取り除く前提）
+MERGE INTO users (id, username, password, role) KEY(id)
+VALUES (1, 'USER', 'TEMP', 'USER');
+
 INSERT INTO category (name, color) VALUES
 ('仕事', '#1976d2'),
 ('学習', '#2e7d32'),

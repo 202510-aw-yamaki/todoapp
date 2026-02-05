@@ -20,14 +20,17 @@ public class SeedUserRunner {
             }
             String username = "USER";
             String rawPassword = "admin";
-            if (userMapper.findByUsername(username) != null) {
+            AppUser existing = userMapper.findByUsername(username);
+            String encoded = passwordEncoder.encode(rawPassword);
+            if (existing == null) {
+                AppUser user = new AppUser();
+                user.setUsername(username);
+                user.setPassword(encoded);
+                user.setRole("USER");
+                userMapper.insert(user);
                 return;
             }
-            AppUser user = new AppUser();
-            user.setUsername(username);
-            user.setPassword(passwordEncoder.encode(rawPassword));
-            user.setRole("USER");
-            userMapper.insert(user);
+            userMapper.updatePasswordAndRole(username, encoded, "USER");
         };
     }
 }

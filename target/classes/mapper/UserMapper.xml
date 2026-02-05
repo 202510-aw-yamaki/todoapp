@@ -16,6 +16,13 @@
         WHERE username = #{username}
     </select>
 
+    <update id="updatePasswordAndRole">
+        UPDATE users
+        SET password = #{password},
+            role = #{role}
+        WHERE username = #{username}
+    </update>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (username, password, role)
         VALUES (#{username}, #{password}, #{role})

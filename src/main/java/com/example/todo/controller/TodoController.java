@@ -1,7 +1,9 @@
 ﻿package com.example.todo.controller;
 
+import com.example.todo.entity.Category;
 import com.example.todo.entity.Todo;
 import com.example.todo.form.TodoForm;
+import com.example.todo.service.CategoryService;
 import com.example.todo.service.TodoService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -20,9 +22,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class TodoController {
 
     private final TodoService todoService;
+    private final CategoryService categoryService;
 
-    public TodoController(TodoService todoService) {
+    public TodoController(TodoService todoService, CategoryService categoryService) {
         this.todoService = todoService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/")
@@ -34,17 +38,20 @@ public class TodoController {
     public String index(
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
+        @RequestParam(name = "categoryId", required = false) Long categoryId,
         @RequestParam(name = "page", required = false, defaultValue = "0") int page,
         @RequestParam(name = "size", required = false, defaultValue = "10") int size,
         Model model
     ) {
         String safeSort = todoService.normalizeSort(sort);
         int safeSize = todoService.resolveSize(size);
-        Page<Todo> todoPage = todoService.list(keyword, safeSort, page, safeSize);
+        Page<Todo> todoPage = todoService.list(keyword, safeSort, categoryId, page, safeSize);
         List<Todo> todos = todoPage.getContent();
         model.addAttribute("todos", todos);
         model.addAttribute("q", keyword);
         model.addAttribute("sort", safeSort);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("categories", categoryService.list());
         model.addAttribute("count", todoPage.getTotalElements());
         model.addAttribute("page", todoPage.getNumber());
         model.addAttribute("size", todoPage.getSize());
@@ -57,6 +64,7 @@ public class TodoController {
     @GetMapping("/todos/new")
     public String createForm(Model model) {
         model.addAttribute("todoForm", new TodoForm());
+        model.addAttribute("categories", categoryService.list());
         model.addAttribute("mode", "create");
         return "create";
     }
@@ -65,6 +73,7 @@ public class TodoController {
     public String editForm(@PathVariable Long id, Model model) {
         Todo todo = todoService.get(id);
         model.addAttribute("todoForm", toForm(todo));
+        model.addAttribute("categories", categoryService.list());
         model.addAttribute("mode", "edit");
         return "create";
     }
@@ -78,14 +87,18 @@ public class TodoController {
         String mode = todoForm.getId() == null ? "create" : "edit";
         model.addAttribute("mode", mode);
         if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.list());
             return "create";
         }
+        Category category = categoryService.get(todoForm.getCategoryId());
+        model.addAttribute("category", category);
         return "confirm";
     }
 
     @PostMapping("/todos/back")
     public String back(@ModelAttribute("todoForm") TodoForm todoForm, @RequestParam("mode") String mode, Model model) {
         model.addAttribute("mode", mode);
+        model.addAttribute("categories", categoryService.list());
         return "create";
     }
 
@@ -110,7 +123,8 @@ public class TodoController {
         if (todo.getId() == null) {
             return "redirect:/todos";
         }
-        model.addAttribute("todo", todo);
+        Todo latest = todoService.get(todo.getId());
+        model.addAttribute("todo", latest);
         return "complete";
     }
 
@@ -119,6 +133,7 @@ public class TodoController {
         @PathVariable Long id,
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
+        @RequestParam(name = "categoryId", required = false) Long categoryId,
         @RequestParam(name = "page", required = false) Integer page,
         @RequestParam(name = "size", required = false) Integer size,
         RedirectAttributes redirectAttributes
@@ -129,6 +144,9 @@ public class TodoController {
         }
         if (sort != null) {
             redirectAttributes.addAttribute("sort", sort);
+        }
+        if (categoryId != null) {
+            redirectAttributes.addAttribute("categoryId", categoryId);
         }
         if (page != null) {
             redirectAttributes.addAttribute("page", page);
@@ -144,6 +162,7 @@ public class TodoController {
         @PathVariable Long id,
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
+        @RequestParam(name = "categoryId", required = false) Long categoryId,
         @RequestParam(name = "page", required = false) Integer page,
         @RequestParam(name = "size", required = false) Integer size,
         RedirectAttributes redirectAttributes
@@ -154,6 +173,9 @@ public class TodoController {
         }
         if (sort != null) {
             redirectAttributes.addAttribute("sort", sort);
+        }
+        if (categoryId != null) {
+            redirectAttributes.addAttribute("categoryId", categoryId);
         }
         if (page != null) {
             redirectAttributes.addAttribute("page", page);
@@ -170,6 +192,7 @@ public class TodoController {
         form.setAuthor(todo.getAuthor());
         form.setTitle(todo.getTitle());
         form.setDetail(todo.getDetail());
+        form.setCategoryId(todo.getCategoryId());
         return form;
     }
 
@@ -179,6 +202,7 @@ public class TodoController {
         todo.setAuthor(form.getAuthor());
         todo.setTitle(form.getTitle());
         todo.setDetail(form.getDetail());
+        todo.setCategoryId(form.getCategoryId());
         return todo;
     }
 }

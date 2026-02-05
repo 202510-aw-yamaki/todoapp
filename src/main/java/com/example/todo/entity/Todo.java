@@ -16,6 +16,10 @@ public class Todo {
 
     private boolean completed;
 
+    private Long categoryId;
+
+    private Category category;
+
     public Long getId() {
         return id;
     }
@@ -62,5 +66,21 @@ public class Todo {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

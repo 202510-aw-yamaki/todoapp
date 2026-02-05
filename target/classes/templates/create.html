@@ -39,6 +39,16 @@
                 <div class="error" th:errors="*{detail}"></div>
             </td>
         </tr>
+        <tr>
+            <th>カテゴリ（必須）</th>
+            <td>
+                <select th:field="*{categoryId}">
+                    <option value="">選択してください</option>
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+                <div class="error" th:errors="*{categoryId}"></div>
+            </td>
+        </tr>
     </table>
 
     <div class="actions">

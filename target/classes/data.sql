@@ -1,4 +1,10 @@
 -- テスト用データ（最終的には取り除く前提）
+INSERT INTO category (name, color) VALUES
+('仕事', '#1976d2'),
+('学習', '#2e7d32'),
+('生活', '#6a1b9a'),
+('趣味', '#ef6c00');
+
 INSERT INTO todo (author, title, detail, created_at, completed) VALUES
 ('田中', '買い物リスト作成', '牛乳・卵・パンを購入する', CURRENT_TIMESTAMP, FALSE),
 ('佐藤', 'レポート提出', '金曜までに資料をまとめる', CURRENT_TIMESTAMP, TRUE),
@@ -64,3 +70,12 @@ INSERT INTO todo (author, title, detail, created_at, completed) VALUES
 ('中川', '新規登録確認', '新規登録が成功するか確認', CURRENT_TIMESTAMP, FALSE),
 ('三浦', '削除取り消し確認', 'キャンセルで削除されないか確認', CURRENT_TIMESTAMP, TRUE),
 ('木下', '一覧戻り確認', '完了から一覧に戻る確認', CURRENT_TIMESTAMP, FALSE);
+
+-- 既存データのカテゴリ割当（テスト用・最終的には取り除く前提）
+UPDATE todo
+SET category_id = CASE MOD(id, 4)
+    WHEN 0 THEN 4
+    WHEN 1 THEN 1
+    WHEN 2 THEN 2
+    ELSE 3
+END;

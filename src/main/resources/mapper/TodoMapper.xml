@@ -6,20 +6,50 @@
 
     <select id="count" resultType="int">
         SELECT COUNT(*)
-        FROM todo
+        FROM todo t
         <where>
             <if test="keyword != null and keyword != ''">
-                LOWER(title) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+                LOWER(t.title) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+            </if>
+            <if test="categoryId != null">
+                AND t.category_id = #{categoryId}
             </if>
         </where>
     </select>
 
-    <select id="searchPage" resultType="com.example.todo.entity.Todo">
-        SELECT id, author, title, detail, created_at, completed
-        FROM todo
+    <resultMap id="TodoResultMap" type="com.example.todo.entity.Todo">
+        <id column="id" property="id" />
+        <result column="author" property="author" />
+        <result column="title" property="title" />
+        <result column="detail" property="detail" />
+        <result column="created_at" property="createdAt" />
+        <result column="completed" property="completed" />
+        <result column="category_id" property="categoryId" />
+        <association property="category" javaType="com.example.todo.entity.Category">
+            <id column="category_id" property="id" />
+            <result column="category_name" property="name" />
+            <result column="category_color" property="color" />
+        </association>
+    </resultMap>
+
+    <select id="searchPage" resultMap="TodoResultMap">
+        SELECT t.id,
+               t.author,
+               t.title,
+               t.detail,
+               t.created_at,
+               t.completed,
+               t.category_id,
+               c.name AS category_name,
+               c.color AS category_color
+        FROM todo t
+        LEFT JOIN category c ON c.id = t.category_id
         <where>
             <if test="keyword != null and keyword != ''">
-                LOWER(title) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+                LOWER(t.title) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+            </if>
+            <if test="categoryId != null">
+                AND t.category_id = #{categoryId}
             </if>
         </where>
         ORDER BY
@@ -35,15 +65,24 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
-    <select id="findById" resultType="com.example.todo.entity.Todo">
-        SELECT id, author, title, detail, created_at, completed
-        FROM todo
-        WHERE id = #{id}
+    <select id="findById" resultMap="TodoResultMap">
+        SELECT t.id,
+               t.author,
+               t.title,
+               t.detail,
+               t.created_at,
+               t.completed,
+               t.category_id,
+               c.name AS category_name,
+               c.color AS category_color
+        FROM todo t
+        LEFT JOIN category c ON c.id = t.category_id
+        WHERE t.id = #{id}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO todo (author, title, detail, created_at, completed)
-        VALUES (#{author}, #{title}, #{detail}, #{createdAt}, #{completed})
+        INSERT INTO todo (author, title, detail, created_at, completed, category_id)
+        VALUES (#{author}, #{title}, #{detail}, #{createdAt}, #{completed}, #{categoryId})
     </insert>
 
     <update id="update">
@@ -51,7 +90,8 @@
         SET author = #{author},
             title = #{title},
             detail = #{detail},
-            completed = #{completed}
+            completed = #{completed},
+            category_id = #{categoryId}
         WHERE id = #{id}
     </update>
 

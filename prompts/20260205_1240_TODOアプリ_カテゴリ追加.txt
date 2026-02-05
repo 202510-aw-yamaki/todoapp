@@ -1,0 +1,66 @@
+﻿【指示】
+- カテゴリマスタテーブルを作成する（id, name, color）
+- ToDoにカテゴリを紐付ける（多対1）
+- 入力フォームでカテゴリをselectで選択できるようにする
+- 一覧画面でカテゴリ名を色付きバッジ表示する
+- カテゴリでのフィルタリングを可能にする
+- MyBatisのJOINクエリでカテゴリ情報を取得する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- categoryテーブルが作成されている
+- todoにcategory_idが保持される
+- 一覧にカテゴリバッジが表示される
+- フォームでカテゴリが選択できる
+- カテゴリで絞り込みができる
+
+【非対象（今回はやらないこと）】
+- タグの複数付与
+- 認証・認可
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/entity/Category.java
+  - src/main/java/com/example/todo/repository/CategoryMapper.java
+  - src/main/java/com/example/todo/service/CategoryService.java
+  - src/main/resources/mapper/CategoryMapper.xml
+- 変更したファイル:
+  - src/main/java/com/example/todo/entity/Todo.java
+  - src/main/java/com/example/todo/form/TodoForm.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/resources/schema.sql
+  - src/main/resources/data.sql
+  - src/main/resources/templates/index.html
+  - src/main/resources/templates/create.html
+  - src/main/resources/templates/confirm.html
+  - src/main/resources/templates/complete.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- カテゴリマスタ導入とtodoへの紐付け
+- 一覧のカテゴリバッジ表示とフィルタリング追加
+- MyBatisのJOIN取得とフォームのカテゴリ選択追加
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- 一覧画面でカテゴリバッジが表示されること
+- カテゴリ選択で絞り込みできること
+- 登録/編集/確認/完了でカテゴリが表示・保持されること
+
+【説明】
+- カテゴリをマスタ化し、todoにcategory_idで紐付け
+- JOINでカテゴリ情報を取得して表示

@@ -1,6 +1,7 @@
 package com.example.todo.form;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class TodoForm {
@@ -17,6 +18,9 @@ public class TodoForm {
 
     @Size(max = 500, message = "詳細は500文字以内で入力してください")
     private String detail;
+
+    @NotNull(message = "カテゴリは必須です")
+    private Long categoryId;
 
     public Long getId() {
         return id;
@@ -48,5 +52,13 @@ public class TodoForm {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 }

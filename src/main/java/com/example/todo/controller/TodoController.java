@@ -6,11 +6,14 @@ import com.example.todo.form.TodoForm;
 import com.example.todo.service.CategoryService;
 import com.example.todo.service.TodoService;
 import jakarta.validation.Valid;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -252,6 +255,26 @@ public class TodoController {
         return "redirect:/todos";
     }
 
+    @GetMapping("/todos/export")
+    public ResponseEntity<byte[]> exportCsv(
+        @RequestParam(name = "q", required = false) String keyword,
+        @RequestParam(name = "sort", required = false) String sort,
+        @RequestParam(name = "categoryId", required = false) Long categoryId,
+        @RequestParam(name = "author", required = false) List<String> authors,
+        @RequestParam(name = "status", required = false) String status
+    ) {
+        Boolean completed = resolveCompleted(status);
+        List<Todo> todos = todoService.listAll(keyword, sort, categoryId, authors, completed);
+        String csv = buildCsv(todos);
+        byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
+
+        String fileName = "todo_" + java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")) + ".csv";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/csv; charset=UTF-8");
+        return ResponseEntity.ok().headers(headers).body(bytes);
+    }
+
     private Boolean resolveCompleted(String status) {
         if (status == null || status.isBlank()) {
             return null;
@@ -261,6 +284,30 @@ public class TodoController {
             case "active" -> false;
             default -> null;
         };
+    }
+
+    private String buildCsv(List<Todo> todos) {
+        StringBuilder sb = new StringBuilder();
+        sb.append('\uFEFF');
+        sb.append("ID,タイトル,登録者,ステータス,作成日,期限日\n");
+        for (Todo todo : todos) {
+            sb.append(escapeCsv(String.valueOf(todo.getId()))).append(',');
+            sb.append(escapeCsv(todo.getTitle())).append(',');
+            sb.append(escapeCsv(todo.getAuthor())).append(',');
+            sb.append(escapeCsv(todo.isCompleted() ? "完了" : "未完了")).append(',');
+            sb.append(escapeCsv(todo.getCreatedAtLabel())).append(',');
+            sb.append(escapeCsv(todo.getDeadlineLabel())).append('\n');
+        }
+        return sb.toString();
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+        boolean needsQuote = value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r");
+        String escaped = value.replace("\"", "\"\"");
+        return needsQuote ? "\"" + escaped + "\"" : escaped;
     }
 
     private TodoForm toForm(Todo todo) {

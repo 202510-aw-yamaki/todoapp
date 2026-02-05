@@ -69,6 +69,7 @@
         <a th:href="@{/todos}">クリア</a>
     </form>
     <a th:href="@{/todos/new}">新規登録</a>
+    <a th:href="@{/todos/export(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status})}">CSVダウンロード</a>
 </div>
 
 <div class="bulk-bar">

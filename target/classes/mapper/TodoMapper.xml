@@ -87,6 +87,50 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
+    <select id="searchAll" resultMap="TodoResultMap">
+        SELECT t.id,
+               t.author,
+               t.title,
+               t.detail,
+               t.created_at,
+               t.deadline,
+               t.completed,
+               t.category_id,
+               c.name AS category_name,
+               c.color AS category_color
+        FROM todo t
+        LEFT JOIN category c ON c.id = t.category_id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                LOWER(t.title) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+            </if>
+            <if test="categoryId != null">
+                AND t.category_id = #{categoryId}
+            </if>
+            <if test="authors != null and authors.size() > 0">
+                AND t.author IN
+                <foreach collection="authors" item="a" open="(" separator="," close=")">
+                    #{a}
+                </foreach>
+            </if>
+            <if test="completed != null">
+                AND t.completed = #{completed}
+            </if>
+        </where>
+        ORDER BY
+        <choose>
+            <when test="sort == 'createdAtAsc'">created_at ASC</when>
+            <when test="sort == 'createdAtDesc'">created_at DESC</when>
+            <when test="sort == 'titleAsc'">title ASC</when>
+            <when test="sort == 'titleDesc'">title DESC</when>
+            <when test="sort == 'completedAsc'">completed ASC</when>
+            <when test="sort == 'completedDesc'">completed DESC</when>
+            <when test="sort == 'deadlineAsc'">deadline ASC</when>
+            <when test="sort == 'deadlineDesc'">deadline DESC</when>
+            <otherwise>created_at DESC</otherwise>
+        </choose>
+    </select>
+
     <select id="findAuthors" resultType="string">
         SELECT DISTINCT author
         FROM todo

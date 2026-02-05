@@ -24,6 +24,14 @@ public interface TodoMapper {
         @Param("completed") Boolean completed
     );
 
+    List<Todo> searchAll(
+        @Param("keyword") String keyword,
+        @Param("sort") String sort,
+        @Param("categoryId") Long categoryId,
+        @Param("authors") List<String> authors,
+        @Param("completed") Boolean completed
+    );
+
     List<String> findAuthors();
 
     Todo findById(@Param("id") Long id);

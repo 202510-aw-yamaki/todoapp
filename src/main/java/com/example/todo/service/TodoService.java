@@ -39,6 +39,19 @@ public class TodoService {
         return new PageImpl<>(rows, PageRequest.of(safePage, safeSize), total);
     }
 
+    public List<Todo> listAll(
+        String keyword,
+        String sortKey,
+        Long categoryId,
+        List<String> authors,
+        Boolean completed
+    ) {
+        String safeSort = normalizeSort(sortKey);
+        String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
+        List<String> safeAuthors = (authors == null || authors.isEmpty()) ? null : authors;
+        return todoMapper.searchAll(safeKeyword, safeSort, categoryId, safeAuthors, completed);
+    }
+
     public Todo get(Long id) {
         Todo todo = todoMapper.findById(id);
         if (todo == null) {

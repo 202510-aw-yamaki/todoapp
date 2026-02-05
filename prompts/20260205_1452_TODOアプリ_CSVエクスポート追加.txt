@@ -1,0 +1,55 @@
+﻿【指示】
+- 一覧画面にCSVダウンロードボタンを追加する
+- クリックでToDoデータをCSV形式でダウンロードする
+- CSV項目はID/タイトル/登録者/ステータス/作成日/期限日
+- UTF-8（BOM付き）でExcel対応する
+- ファイル名はtodo_yyyyMMdd.csv形式
+- 現在の検索条件を維持してエクスポートする
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- CSVダウンロードボタンが表示される
+- 現在の検索条件でCSVが出力される
+- BOM付きUTF-8でExcelで文字化けしない
+- ファイル名がtodo_yyyyMMdd.csvになる
+
+【非対象（今回はやらないこと）】
+- OpenCSV等のライブラリ導入
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- 検索条件を保持したCSV出力エンドポイントを追加
+- CSVダウンロードボタンを一覧に追加
+- BOM付きUTF-8でCSVを出力
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- 一覧でCSVダウンロードをクリック
+- 検索条件が反映されたCSVがダウンロードされる
+- Excelで文字化けしない
+
+【説明】
+- ResponseEntity + HttpHeadersでCSVを返却
+- BOM付きUTF-8でExcel対応
+

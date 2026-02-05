@@ -1,40 +1,41 @@
 ﻿package com.example.todo.service;
 
 import com.example.todo.entity.Todo;
-import com.example.todo.repository.TodoRepository;
+import com.example.todo.repository.TodoMapper;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
 public class TodoService {
 
-    private final TodoRepository todoRepository;
+    private final TodoMapper todoMapper;
 
-    public TodoService(TodoRepository todoRepository) {
-        this.todoRepository = todoRepository;
+    public TodoService(TodoMapper todoMapper) {
+        this.todoMapper = todoMapper;
     }
 
     public List<Todo> list(String keyword, String sortKey) {
-        Sort sort = resolveSort(sortKey);
-        if (StringUtils.hasText(keyword)) {
-            return todoRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, sort);
-        }
-        return todoRepository.findAll(sort);
+        String safeSort = StringUtils.hasText(sortKey) ? sortKey : "createdAtDesc";
+        return todoMapper.search(StringUtils.hasText(keyword) ? keyword : null, safeSort);
     }
 
     public Todo get(Long id) {
-        return todoRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Todo not found: " + id));
+        Todo todo = todoMapper.findById(id);
+        if (todo == null) {
+            throw new IllegalArgumentException("Todo not found: " + id);
+        }
+        return todo;
     }
 
     public Todo create(Todo todo) {
         if (todo.getCreatedAt() == null) {
             todo.setCreatedAt(LocalDateTime.now());
         }
-        return todoRepository.save(todo);
+        todo.setCompleted(false);
+        todoMapper.insert(todo);
+        return todo;
     }
 
     public Todo update(Long id, Todo input) {
@@ -42,22 +43,17 @@ public class TodoService {
         existing.setAuthor(input.getAuthor());
         existing.setTitle(input.getTitle());
         existing.setDetail(input.getDetail());
-        return todoRepository.save(existing);
+        todoMapper.update(existing);
+        return existing;
     }
 
     public void delete(Long id) {
-        todoRepository.deleteById(id);
+        todoMapper.delete(id);
     }
 
-    private Sort resolveSort(String sortKey) {
-        if (!StringUtils.hasText(sortKey)) {
-            return Sort.by(Sort.Direction.DESC, "createdAt");
-        }
-        return switch (sortKey) {
-            case "createdAtAsc" -> Sort.by(Sort.Direction.ASC, "createdAt");
-            case "titleAsc" -> Sort.by(Sort.Direction.ASC, "title");
-            case "authorAsc" -> Sort.by(Sort.Direction.ASC, "author");
-            default -> Sort.by(Sort.Direction.DESC, "createdAt");
-        };
+    public void toggleCompleted(Long id) {
+        Todo existing = get(id);
+        boolean next = !existing.isCompleted();
+        todoMapper.updateCompleted(id, next);
     }
 }

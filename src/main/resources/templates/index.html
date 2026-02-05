@@ -11,6 +11,10 @@
         .actions { display: flex; gap: 8px; }
         .topbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
         .muted { color: #666; }
+        tr.completed { background: #eee; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; color: #fff; }
+        .badge.done { background: #666; }
+        .badge.todo { background: #1976d2; }
     </style>
 </head>
 <body>
@@ -37,21 +41,31 @@
         <th>タイトル</th>
         <th>登録者</th>
         <th>作成日</th>
+        <th>ステータス</th>
         <th>操作</th>
     </tr>
     </thead>
     <tbody>
     <tr th:if="${#lists.isEmpty(todos)}">
-        <td colspan="5" class="muted">データはありません</td>
+        <td colspan="6" class="muted">データはありません</td>
     </tr>
-    <tr th:each="todo, stat : ${todos}">
+    <tr th:each="todo, stat : ${todos}" th:classappend="${todo.completed} ? 'completed'">
         <td th:text="${stat.count}"></td>
         <td th:text="${todo.title}"></td>
         <td th:text="${todo.author}"></td>
         <td th:text="${#temporals.format(todo.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
         <td>
+            <span class="badge done" th:if="${todo.completed}">完了</span>
+            <span class="badge todo" th:unless="${todo.completed}">未完了</span>
+        </td>
+        <td>
             <div class="actions">
                 <a th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
+                <form th:action="@{/todos/{id}/toggle(id=${todo.id})}" method="post">
+                    <input type="hidden" name="q" th:value="${q}" />
+                    <input type="hidden" name="sort" th:value="${sort}" />
+                    <button type="submit" th:text="${todo.completed} ? '未完了に戻す' : '完了にする'"></button>
+                </form>
                 <form th:action="@{/todos/{id}/delete(id=${todo.id})}" method="post">
                     <button type="submit" onclick="return confirm('削除しますか？')">削除</button>
                 </form>

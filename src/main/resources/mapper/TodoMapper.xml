@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todo.repository.TodoMapper">
+
+    <select id="search" resultType="com.example.todo.entity.Todo">
+        SELECT id, author, title, detail, created_at, completed
+        FROM todo
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (LOWER(title) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+                 OR LOWER(author) LIKE CONCAT('%', LOWER(#{keyword}), '%'))
+            </if>
+        </where>
+        ORDER BY
+        <choose>
+            <when test="sort == 'createdAtAsc'">created_at ASC</when>
+            <when test="sort == 'titleAsc'">title ASC</when>
+            <when test="sort == 'authorAsc'">author ASC</when>
+            <otherwise>created_at DESC</otherwise>
+        </choose>
+    </select>
+
+    <select id="findById" resultType="com.example.todo.entity.Todo">
+        SELECT id, author, title, detail, created_at, completed
+        FROM todo
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO todo (author, title, detail, created_at, completed)
+        VALUES (#{author}, #{title}, #{detail}, #{createdAt}, #{completed})
+    </insert>
+
+    <update id="update">
+        UPDATE todo
+        SET author = #{author},
+            title = #{title},
+            detail = #{detail},
+            completed = #{completed}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateCompleted">
+        UPDATE todo
+        SET completed = #{completed}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM todo
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

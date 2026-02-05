@@ -108,6 +108,23 @@ public class TodoController {
         return "redirect:/todos";
     }
 
+    @PostMapping("/todos/{id}/toggle")
+    public String toggle(
+        @PathVariable Long id,
+        @RequestParam(name = "q", required = false) String keyword,
+        @RequestParam(name = "sort", required = false) String sort,
+        RedirectAttributes redirectAttributes
+    ) {
+        todoService.toggleCompleted(id);
+        if (keyword != null) {
+            redirectAttributes.addAttribute("q", keyword);
+        }
+        if (sort != null) {
+            redirectAttributes.addAttribute("sort", sort);
+        }
+        return "redirect:/todos";
+    }
+
     private TodoForm toForm(Todo todo) {
         TodoForm form = new TodoForm();
         form.setId(todo.getId());

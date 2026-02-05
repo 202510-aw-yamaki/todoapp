@@ -35,10 +35,11 @@ public class TodoController {
         @RequestParam(name = "sort", required = false) String sort,
         Model model
     ) {
-        List<Todo> todos = todoService.list(keyword, sort);
+        String safeSort = todoService.normalizeSort(sort);
+        List<Todo> todos = todoService.list(keyword, safeSort);
         model.addAttribute("todos", todos);
         model.addAttribute("q", keyword);
-        model.addAttribute("sort", sort);
+        model.addAttribute("sort", safeSort);
         model.addAttribute("count", todos.size());
         return "index";
     }

@@ -15,8 +15,11 @@
         ORDER BY
         <choose>
             <when test="sort == 'createdAtAsc'">created_at ASC</when>
+            <when test="sort == 'createdAtDesc'">created_at DESC</when>
             <when test="sort == 'titleAsc'">title ASC</when>
-            <when test="sort == 'authorAsc'">author ASC</when>
+            <when test="sort == 'titleDesc'">title DESC</when>
+            <when test="sort == 'completedAsc'">completed ASC</when>
+            <when test="sort == 'completedDesc'">completed DESC</when>
             <otherwise>created_at DESC</otherwise>
         </choose>
     </select>

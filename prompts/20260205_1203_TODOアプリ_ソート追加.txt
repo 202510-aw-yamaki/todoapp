@@ -1,0 +1,53 @@
+﻿【指示】
+- 一覧画面のテーブルヘッダークリックでソートできるようにする
+- ソート対象は作成日、タイトル、ステータス
+- 昇順/降順の切り替えを可能にする
+- 現在のソート状態を▲▼で表示する
+- URLパラメータでソート状態を保持する
+- ORDER BYはホワイトリスト方式で安全なカラム名のみ許可する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- ヘッダークリックでソートが切り替わる
+- ソート状態が▲▼で表示される
+- URLパラメータにsortが保持される
+- MyBatisのORDER BYがホワイトリストで制御されている
+
+【非対象（今回はやらないこと）】
+- 複数カラムの同時ソート
+- 画面デザインの大幅な変更
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- ホワイトリストで許可したsortのみ通すように変更
+- ヘッダーリンクで昇順/降順切り替えと表示を実装
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- http://localhost:8080/todos にアクセス
+- タイトル/作成日/ステータスのヘッダークリックで昇順/降順が切り替わる
+- ソート状態に応じて▲▼が表示される
+- URLのsortパラメータが保持される
+
+【説明】
+- ソートキーはサービス層でホワイトリスト検証し、不正なカラム名を排除

@@ -17,7 +17,7 @@ public class TodoService {
     }
 
     public List<Todo> list(String keyword, String sortKey) {
-        String safeSort = StringUtils.hasText(sortKey) ? sortKey : "createdAtDesc";
+        String safeSort = normalizeSort(sortKey);
         return todoMapper.search(StringUtils.hasText(keyword) ? keyword : null, safeSort);
     }
 
@@ -55,5 +55,20 @@ public class TodoService {
         Todo existing = get(id);
         boolean next = !existing.isCompleted();
         todoMapper.updateCompleted(id, next);
+    }
+
+    public String normalizeSort(String sortKey) {
+        if (!StringUtils.hasText(sortKey)) {
+            return "createdAtDesc";
+        }
+        return switch (sortKey) {
+            case "createdAtAsc",
+                 "createdAtDesc",
+                 "titleAsc",
+                 "titleDesc",
+                 "completedAsc",
+                 "completedDesc" -> sortKey;
+            default -> "createdAtDesc";
+        };
     }
 }

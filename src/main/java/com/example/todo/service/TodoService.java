@@ -65,7 +65,7 @@ public class TodoService {
     public Todo get(Long id) {
         Todo todo = todoMapper.findById(id);
         if (todo == null) {
-            throw new IllegalArgumentException("Todo not found: " + id);
+            throw new com.example.todo.exception.TodoNotFoundException("Todo not found: " + id);
         }
         return todo;
     }

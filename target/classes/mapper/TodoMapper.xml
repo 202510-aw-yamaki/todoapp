@@ -23,11 +23,15 @@
             <if test="completed != null">
                 AND t.completed = #{completed}
             </if>
+            <if test="userId != null">
+                AND t.user_id = #{userId}
+            </if>
         </where>
     </select>
 
     <resultMap id="TodoResultMap" type="com.example.todo.entity.Todo">
         <id column="id" property="id" />
+        <result column="user_id" property="userId" />
         <result column="author" property="author" />
         <result column="title" property="title" />
         <result column="detail" property="detail" />
@@ -44,6 +48,7 @@
 
     <select id="searchPage" resultMap="TodoResultMap">
         SELECT t.id,
+               t.user_id,
                t.author,
                t.title,
                t.detail,
@@ -70,6 +75,9 @@
             </if>
             <if test="completed != null">
                 AND t.completed = #{completed}
+            </if>
+            <if test="userId != null">
+                AND t.user_id = #{userId}
             </if>
         </where>
         ORDER BY
@@ -89,6 +97,7 @@
 
     <select id="searchAll" resultMap="TodoResultMap">
         SELECT t.id,
+               t.user_id,
                t.author,
                t.title,
                t.detail,
@@ -116,6 +125,9 @@
             <if test="completed != null">
                 AND t.completed = #{completed}
             </if>
+            <if test="userId != null">
+                AND t.user_id = #{userId}
+            </if>
         </where>
         ORDER BY
         <choose>
@@ -134,11 +146,13 @@
     <select id="findAuthors" resultType="string">
         SELECT DISTINCT author
         FROM todo
+        WHERE user_id = #{userId}
         ORDER BY author ASC
     </select>
 
     <select id="findById" resultMap="TodoResultMap">
         SELECT t.id,
+               t.user_id,
                t.author,
                t.title,
                t.detail,
@@ -154,8 +168,8 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO todo (author, title, detail, created_at, completed, category_id, deadline)
-        VALUES (#{author}, #{title}, #{detail}, #{createdAt}, #{completed}, #{categoryId}, #{deadline})
+        INSERT INTO todo (user_id, author, title, detail, created_at, completed, category_id, deadline)
+        VALUES (#{userId}, #{author}, #{title}, #{detail}, #{createdAt}, #{completed}, #{categoryId}, #{deadline})
     </insert>
 
     <update id="update">
@@ -187,5 +201,11 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="findOwnerId" resultType="long">
+        SELECT user_id
+        FROM todo
+        WHERE id = #{id}
+    </select>
 
 </mapper>

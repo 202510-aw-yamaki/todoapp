@@ -1,0 +1,59 @@
+﻿【指示】
+- ToDoにuser_id（作成者）を追加しユーザーと紐付ける
+- ログインユーザーは自分のToDoのみ表示・編集可能とする
+- 新規作成時にログインユーザーIDを自動設定する
+- 他ユーザーのToDoアクセスは403にする
+- @PreAuthorize("@todoSecurityService.isOwner(#id, principal)") でメソッドレベルのセキュリティを実装する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- user_idが追加されユーザーと紐付く
+- 自分のToDoのみ表示・編集できる
+- 他ユーザーのToDoアクセスは403になる
+- メソッドレベルの@PreAuthorizeが動作する
+
+【非対象（今回はやらないこと）】
+- 管理者による他ユーザー管理
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/service/TodoSecurityService.java
+- 変更したファイル:
+  - src/main/resources/schema.sql
+  - src/main/java/com/example/todo/entity/Todo.java
+  - src/main/java/com/example/todo/repository/UserMapper.java
+  - src/main/resources/mapper/UserMapper.xml
+  - src/main/java/com/example/todo/service/UserService.java
+  - src/main/java/com/example/todo/config/SecurityConfig.java
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/data.sql
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- user_id追加とユーザー別フィルタリング
+- @PreAuthorizeで所有者チェック
+- ユーザーIDの自動設定
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- ログイン後に自分のToDoのみ表示される
+- 他ユーザーIDにアクセスすると403
+- 新規作成でuser_idが設定される
+
+【説明】
+- UserDetailsのユーザー名からuser_idを解決し絞り込み
+- TodoSecurityServiceで所有者判定

@@ -25,6 +25,7 @@ public class TodoService {
         Long categoryId,
         List<String> authors,
         Boolean completed,
+        Long userId,
         int page,
         int size
     ) {
@@ -34,8 +35,8 @@ public class TodoService {
         int offset = safePage * safeSize;
         String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
         List<String> safeAuthors = (authors == null || authors.isEmpty()) ? null : authors;
-        int total = todoMapper.count(safeKeyword, categoryId, safeAuthors, completed);
-        List<Todo> rows = todoMapper.searchPage(safeKeyword, safeSort, safeSize, offset, categoryId, safeAuthors, completed);
+        int total = todoMapper.count(safeKeyword, categoryId, safeAuthors, completed, userId);
+        List<Todo> rows = todoMapper.searchPage(safeKeyword, safeSort, safeSize, offset, categoryId, safeAuthors, completed, userId);
         return new PageImpl<>(rows, PageRequest.of(safePage, safeSize), total);
     }
 
@@ -44,14 +45,16 @@ public class TodoService {
         String sortKey,
         Long categoryId,
         List<String> authors,
-        Boolean completed
+        Boolean completed,
+        Long userId
     ) {
         String safeSort = normalizeSort(sortKey);
         String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
         List<String> safeAuthors = (authors == null || authors.isEmpty()) ? null : authors;
-        return todoMapper.searchAll(safeKeyword, safeSort, categoryId, safeAuthors, completed);
+        return todoMapper.searchAll(safeKeyword, safeSort, categoryId, safeAuthors, completed, userId);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwner(#id, principal)")
     public Todo get(Long id) {
         Todo todo = todoMapper.findById(id);
         if (todo == null) {
@@ -72,6 +75,7 @@ public class TodoService {
         return todo;
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwner(#id, principal)")
     public Todo update(Long id, Todo input) {
         Todo existing = get(id);
         existing.setAuthor(input.getAuthor());
@@ -83,6 +87,7 @@ public class TodoService {
         return existing;
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwner(#id, principal)")
     public void delete(Long id) {
         todoMapper.delete(id);
     }
@@ -91,9 +96,12 @@ public class TodoService {
         if (ids == null || ids.isEmpty()) {
             return;
         }
-        todoMapper.deleteBatch(ids);
+        for (Long id : ids) {
+            delete(id);
+        }
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwner(#id, principal)")
     public void toggleCompleted(Long id) {
         Todo existing = get(id);
         boolean next = !existing.isCompleted();
@@ -124,7 +132,7 @@ public class TodoService {
         };
     }
 
-    public List<String> listAuthors() {
-        return todoMapper.findAuthors();
+    public List<String> listAuthors(Long userId) {
+        return todoMapper.findAuthors(userId);
     }
 }

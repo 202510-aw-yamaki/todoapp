@@ -11,7 +11,8 @@ public interface TodoMapper {
         @Param("keyword") String keyword,
         @Param("categoryId") Long categoryId,
         @Param("authors") List<String> authors,
-        @Param("completed") Boolean completed
+        @Param("completed") Boolean completed,
+        @Param("userId") Long userId
     );
 
     List<Todo> searchPage(
@@ -21,7 +22,8 @@ public interface TodoMapper {
         @Param("offset") int offset,
         @Param("categoryId") Long categoryId,
         @Param("authors") List<String> authors,
-        @Param("completed") Boolean completed
+        @Param("completed") Boolean completed,
+        @Param("userId") Long userId
     );
 
     List<Todo> searchAll(
@@ -29,10 +31,13 @@ public interface TodoMapper {
         @Param("sort") String sort,
         @Param("categoryId") Long categoryId,
         @Param("authors") List<String> authors,
-        @Param("completed") Boolean completed
+        @Param("completed") Boolean completed,
+        @Param("userId") Long userId
     );
 
-    List<String> findAuthors();
+    List<String> findAuthors(@Param("userId") Long userId);
+
+    Long findOwnerId(@Param("id") Long id);
 
     Todo findById(@Param("id") Long id);
 

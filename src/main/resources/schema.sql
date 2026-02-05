@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS todo (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL DEFAULT 1,
     author VARCHAR(50) NOT NULL,
     title VARCHAR(100) NOT NULL,
     detail VARCHAR(500),
@@ -20,5 +21,6 @@ CREATE TABLE IF NOT EXISTS todo (
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     category_id BIGINT NOT NULL DEFAULT 1,
     deadline DATE,
-    CONSTRAINT fk_todo_category FOREIGN KEY (category_id) REFERENCES category(id)
+    CONSTRAINT fk_todo_category FOREIGN KEY (category_id) REFERENCES category(id),
+    CONSTRAINT fk_todo_user FOREIGN KEY (user_id) REFERENCES users(id)
 );

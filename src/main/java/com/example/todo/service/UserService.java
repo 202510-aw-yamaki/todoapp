@@ -31,4 +31,8 @@ public class UserService implements UserDetailsService {
             Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
         );
     }
+
+    public Long findUserId(String username) {
+        return userMapper.findIdByUsername(username);
+    }
 }

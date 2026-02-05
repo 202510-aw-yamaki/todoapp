@@ -5,6 +5,7 @@ import com.example.todo.entity.Todo;
 import com.example.todo.form.TodoForm;
 import com.example.todo.service.CategoryService;
 import com.example.todo.service.TodoService;
+import com.example.todo.service.UserService;
 import jakarta.validation.Valid;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -24,16 +25,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @Controller
 public class TodoController {
 
     private final TodoService todoService;
     private final CategoryService categoryService;
+    private final UserService userService;
 
-    public TodoController(TodoService todoService, CategoryService categoryService) {
+    public TodoController(TodoService todoService, CategoryService categoryService, UserService userService) {
         this.todoService = todoService;
         this.categoryService = categoryService;
+        this.userService = userService;
     }
 
     @GetMapping("/")
@@ -50,12 +55,14 @@ public class TodoController {
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "page", required = false, defaultValue = "0") int page,
         @RequestParam(name = "size", required = false, defaultValue = "10") int size,
+        @AuthenticationPrincipal UserDetails principal,
         Model model
     ) {
         String safeSort = todoService.normalizeSort(sort);
         int safeSize = todoService.resolveSize(size);
         Boolean completed = resolveCompleted(status);
-        Page<Todo> todoPage = todoService.list(keyword, safeSort, categoryId, authors, completed, page, safeSize);
+        Long userId = userService.findUserId(principal.getUsername());
+        Page<Todo> todoPage = todoService.list(keyword, safeSort, categoryId, authors, completed, userId, page, safeSize);
         List<Todo> todos = todoPage.getContent();
         model.addAttribute("todos", todos);
         model.addAttribute("q", keyword);
@@ -63,7 +70,7 @@ public class TodoController {
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("author", authors);
         model.addAttribute("status", status);
-        model.addAttribute("authors", todoService.listAuthors());
+        model.addAttribute("authors", todoService.listAuthors(userId));
         model.addAttribute("categories", categoryService.list());
         model.addAttribute("count", todoPage.getTotalElements());
         model.addAttribute("page", todoPage.getNumber());
@@ -122,13 +129,14 @@ public class TodoController {
     public String complete(
         @ModelAttribute("todoForm") TodoForm todoForm,
         @RequestParam("mode") String mode,
+        @AuthenticationPrincipal UserDetails principal,
         RedirectAttributes redirectAttributes
     ) {
         Todo saved;
         if ("edit".equals(mode)) {
-            saved = todoService.update(todoForm.getId(), toEntity(todoForm));
+            saved = todoService.update(todoForm.getId(), toEntity(todoForm, userService.findUserId(principal.getUsername())));
         } else {
-            saved = todoService.create(toEntity(todoForm));
+            saved = todoService.create(toEntity(todoForm, userService.findUserId(principal.getUsername())));
         }
         redirectAttributes.addFlashAttribute("todo", saved);
         return "redirect:/todos/complete";
@@ -261,10 +269,12 @@ public class TodoController {
         @RequestParam(name = "sort", required = false) String sort,
         @RequestParam(name = "categoryId", required = false) Long categoryId,
         @RequestParam(name = "author", required = false) List<String> authors,
-        @RequestParam(name = "status", required = false) String status
+        @RequestParam(name = "status", required = false) String status,
+        @AuthenticationPrincipal UserDetails principal
     ) {
         Boolean completed = resolveCompleted(status);
-        List<Todo> todos = todoService.listAll(keyword, sort, categoryId, authors, completed);
+        Long userId = userService.findUserId(principal.getUsername());
+        List<Todo> todos = todoService.listAll(keyword, sort, categoryId, authors, completed, userId);
         String csv = buildCsv(todos);
         byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
 
@@ -321,9 +331,10 @@ public class TodoController {
         return form;
     }
 
-    private Todo toEntity(TodoForm form) {
+    private Todo toEntity(TodoForm form, Long userId) {
         Todo todo = new Todo();
         todo.setId(form.getId());
+        todo.setUserId(userId);
         todo.setAuthor(form.getAuthor());
         todo.setTitle(form.getTitle());
         todo.setDetail(form.getDetail());

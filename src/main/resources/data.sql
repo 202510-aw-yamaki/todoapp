@@ -80,6 +80,10 @@ SET category_id = CASE MOD(id, 4)
     ELSE 3
 END;
 
+-- 既存データのユーザー割当（テスト用・最終的には取り除く前提）
+UPDATE todo
+SET user_id = 1;
+
 -- 作成日と期限日をランダムに設定（テスト用・最終的には取り除く前提）
 UPDATE todo
 SET created_at = DATEADD('DAY', - (MOD(id, 20)), DATEADD('HOUR', MOD(id, 24), CURRENT_TIMESTAMP)),

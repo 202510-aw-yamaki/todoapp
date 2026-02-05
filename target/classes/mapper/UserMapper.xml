@@ -10,6 +10,12 @@
         WHERE username = #{username}
     </select>
 
+    <select id="findIdByUsername" resultType="long">
+        SELECT id
+        FROM users
+        WHERE username = #{username}
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (username, password, role)
         VALUES (#{username}, #{password}, #{role})

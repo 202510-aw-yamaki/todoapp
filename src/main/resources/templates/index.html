@@ -12,6 +12,8 @@
         .topbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
         .muted { color: #666; }
         tr.completed { background: #eee; }
+        tr.deadline-overdue { background: #f8d7da; }
+        tr.deadline-near { background: #fff3cd; }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; color: #fff; }
         .badge.done { background: #666; }
         .badge.todo { background: #1976d2; }
@@ -65,6 +67,11 @@
         </th>
         <th>登録者</th>
         <th>
+            <a th:href="@{/todos(q=${q}, sort=${sort == 'deadlineAsc' ? 'deadlineDesc' : 'deadlineAsc'}, categoryId=${categoryId}, page=${page}, size=${size})}">期限日</a>
+            <span th:if="${sort == 'deadlineAsc'}">▲</span>
+            <span th:if="${sort == 'deadlineDesc'}">▼</span>
+        </th>
+        <th>
             <a th:href="@{/todos(q=${q}, sort=${sort == 'createdAtAsc' ? 'createdAtDesc' : 'createdAtAsc'}, categoryId=${categoryId}, page=${page}, size=${size})}">作成日</a>
             <span th:if="${sort == 'createdAtAsc'}">▲</span>
             <span th:if="${sort == 'createdAtDesc'}">▼</span>
@@ -80,12 +87,14 @@
     </thead>
     <tbody>
     <tr th:if="${#lists.isEmpty(todos)}">
-        <td colspan="7" class="muted">データはありません</td>
+        <td colspan="8" class="muted">データはありません</td>
     </tr>
-    <tr th:each="todo, stat : ${todos}" th:classappend="${todo.completed} ? 'completed'">
+    <tr th:each="todo, stat : ${todos}"
+        th:classappend="|${todo.completed ? 'completed' : ''} ${todo.deadline != null and todo.deadline.isBefore(today) ? 'deadline-overdue' : (todo.deadline != null and !todo.deadline.isBefore(today) and !todo.deadline.isAfter(nearLimit) ? 'deadline-near' : '')}|">
         <td th:text="${stat.count}"></td>
         <td th:text="${todo.title}"></td>
         <td th:text="${todo.author}"></td>
+        <td th:text="${todo.deadlineLabel}"></td>
         <td th:text="${#temporals.format(todo.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
         <td>
             <span class="badge done" th:if="${todo.completed}">完了</span>

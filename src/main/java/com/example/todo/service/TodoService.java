@@ -80,7 +80,9 @@ public class TodoService {
                  "titleAsc",
                  "titleDesc",
                  "completedAsc",
-                 "completedDesc" -> sortKey;
+                 "completedDesc",
+                 "deadlineAsc",
+                 "deadlineDesc" -> sortKey;
             default -> "createdAtDesc";
         };
     }

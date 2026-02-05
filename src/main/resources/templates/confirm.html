@@ -30,6 +30,10 @@
         <td th:text="${todoForm.detail}"></td>
     </tr>
     <tr>
+        <th>期限日</th>
+        <td th:text="${deadlineLabel}"></td>
+    </tr>
+    <tr>
         <th>カテゴリ</th>
         <td>
             <span class="badge category"
@@ -46,6 +50,7 @@
         <input type="hidden" name="author" th:value="${todoForm.author}" />
         <input type="hidden" name="title" th:value="${todoForm.title}" />
         <input type="hidden" name="detail" th:value="${todoForm.detail}" />
+        <input type="hidden" name="deadline" th:value="${todoForm.deadline}" />
         <input type="hidden" name="categoryId" th:value="${todoForm.categoryId}" />
         <input type="hidden" name="mode" th:value="${mode}" />
         <button type="submit" th:text="${mode == 'edit'} ? '更新' : '登録'"></button>
@@ -56,6 +61,7 @@
         <input type="hidden" name="author" th:value="${todoForm.author}" />
         <input type="hidden" name="title" th:value="${todoForm.title}" />
         <input type="hidden" name="detail" th:value="${todoForm.detail}" />
+        <input type="hidden" name="deadline" th:value="${todoForm.deadline}" />
         <input type="hidden" name="categoryId" th:value="${todoForm.categoryId}" />
         <input type="hidden" name="mode" th:value="${mode}" />
         <button type="submit">修正</button>

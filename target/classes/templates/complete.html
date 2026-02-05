@@ -30,6 +30,10 @@
         <td th:text="${todo.detail}"></td>
     </tr>
     <tr>
+        <th>期限日</th>
+        <td th:text="${todo.deadlineLabel}"></td>
+    </tr>
+    <tr>
         <th>カテゴリ</th>
         <td>
             <span class="badge" th:if="${todo.category != null}" th:text="${todo.category.name}"

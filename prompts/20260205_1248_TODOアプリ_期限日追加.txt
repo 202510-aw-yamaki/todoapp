@@ -1,0 +1,63 @@
+﻿【指示】
+- ToDoに期限日（deadline）を追加する
+- 入力フォームに日付選択（input type="date"）を追加する
+- 一覧画面で期限日を表示する
+- 期限切れ（過去日）は赤色でハイライトする
+- 期限が近い（3日以内）は黄色でハイライトする
+- 期限日でのソートを可能にする
+- 日付表示は「令和yy年MM月dd日」形式
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- deadlineカラムが追加されている
+- 入力フォームで期限日が入力できる
+- 一覧に期限日が表示される
+- 期限切れ/期限近いで色分けされる
+- 期限日ソートができる
+- 日付表示が令和表記になっている
+
+【非対象（今回はやらないこと）】
+- 通知機能
+- カレンダーUIの高度化
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/java/com/example/todo/entity/Todo.java
+  - src/main/java/com/example/todo/form/TodoForm.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/resources/schema.sql
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/resources/templates/index.html
+  - src/main/resources/templates/create.html
+  - src/main/resources/templates/confirm.html
+  - src/main/resources/templates/complete.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- deadlineカラムを追加し、フォーム/一覧/ソート/ハイライトに反映
+- 令和表記の表示を追加
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- 期限日を入力して登録
+- 一覧で期限日と色分けが表示される
+- 期限日ソートが動作する
+- 令和表記で表示される
+
+【説明】
+- LocalDateとJapaneseDateで令和表記を実装
+- 期限切れ/期限近いを日付比較で判定

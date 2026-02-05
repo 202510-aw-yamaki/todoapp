@@ -6,7 +6,11 @@ import com.example.todo.form.TodoForm;
 import com.example.todo.service.CategoryService;
 import com.example.todo.service.TodoService;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.time.chrono.JapaneseDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,6 +62,8 @@ public class TodoController {
         model.addAttribute("totalPages", todoPage.getTotalPages());
         model.addAttribute("start", todos.isEmpty() ? 0 : (todoPage.getNumber() * todoPage.getSize() + 1));
         model.addAttribute("end", todos.isEmpty() ? 0 : (todoPage.getNumber() * todoPage.getSize() + todos.size()));
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("nearLimit", LocalDate.now().plusDays(3));
         return "index";
     }
 
@@ -92,6 +98,7 @@ public class TodoController {
         }
         Category category = categoryService.get(todoForm.getCategoryId());
         model.addAttribute("category", category);
+        model.addAttribute("deadlineLabel", formatDeadline(todoForm.getDeadline()));
         return "confirm";
     }
 
@@ -193,6 +200,7 @@ public class TodoController {
         form.setTitle(todo.getTitle());
         form.setDetail(todo.getDetail());
         form.setCategoryId(todo.getCategoryId());
+        form.setDeadline(todo.getDeadline());
         return form;
     }
 
@@ -203,6 +211,15 @@ public class TodoController {
         todo.setTitle(form.getTitle());
         todo.setDetail(form.getDetail());
         todo.setCategoryId(form.getCategoryId());
+        todo.setDeadline(form.getDeadline());
         return todo;
+    }
+
+    private String formatDeadline(LocalDate deadline) {
+        if (deadline == null) {
+            return "";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("Gy年MM月dd日", Locale.JAPAN);
+        return formatter.format(JapaneseDate.from(deadline));
     }
 }

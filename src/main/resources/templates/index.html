@@ -84,6 +84,7 @@
         一括チェック:
         <select id="bulkSelect">
             <option value="">選択してください</option>
+            <option value="all">全て</option>
             <option value="completed">ステータスが完了</option>
             <option value="overdue">期限が過去のもの</option>
         </select>
@@ -285,6 +286,10 @@
                     return;
                 }
                 rowChecks.forEach((c) => {
+                    if (mode === 'all') {
+                        c.checked = true;
+                        return;
+                    }
                     if (mode === 'completed') {
                         c.checked = c.dataset.completed === 'true';
                         return;

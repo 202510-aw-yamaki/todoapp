@@ -35,4 +35,8 @@ public class UserService implements UserDetailsService {
     public Long findUserId(String username) {
         return userMapper.findIdByUsername(username);
     }
+
+    public java.util.List<AppUser> listUsers() {
+        return userMapper.findAll();
+    }
 }

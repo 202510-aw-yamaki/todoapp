@@ -65,7 +65,8 @@ public class TodoController {
         int safeSize = todoService.resolveSize(size);
         Boolean completed = resolveCompleted(status);
         Long userId = userService.findUserId(principal.getUsername());
-        Page<Todo> todoPage = todoService.list(keyword, safeSort, categoryId, authors, completed, userId, page, safeSize);
+        boolean isAdmin = principal.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        Page<Todo> todoPage = todoService.list(keyword, safeSort, categoryId, authors, completed, isAdmin ? null : userId, page, safeSize);
         List<Todo> todos = todoPage.getContent();
         model.addAttribute("todos", todos);
         model.addAttribute("q", keyword);
@@ -73,7 +74,7 @@ public class TodoController {
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("author", authors);
         model.addAttribute("status", status);
-        model.addAttribute("authors", todoService.listAuthors(userId));
+        model.addAttribute("authors", todoService.listAuthors(userId, isAdmin));
         model.addAttribute("categories", categoryService.list());
         model.addAttribute("count", todoPage.getTotalElements());
         model.addAttribute("page", todoPage.getNumber());
@@ -135,11 +136,17 @@ public class TodoController {
         @AuthenticationPrincipal UserDetails principal,
         RedirectAttributes redirectAttributes
     ) {
+        boolean isAdmin = principal.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        Long currentUserId = userService.findUserId(principal.getUsername());
         Todo saved;
         if ("edit".equals(mode)) {
-            saved = todoService.update(todoForm.getId(), toEntity(todoForm, userService.findUserId(principal.getUsername())));
+            Todo entity = toEntity(todoForm, isAdmin ? null : currentUserId);
+            if (isAdmin) {
+                entity.setUserId(todoService.get(todoForm.getId()).getUserId());
+            }
+            saved = todoService.update(todoForm.getId(), entity);
         } else {
-            saved = todoService.create(toEntity(todoForm, userService.findUserId(principal.getUsername())));
+            saved = todoService.create(toEntity(todoForm, currentUserId));
         }
         redirectAttributes.addFlashAttribute("todo", saved);
         return "redirect:/todos/complete";
@@ -280,7 +287,8 @@ public class TodoController {
         }
         Boolean completed = resolveCompleted(status);
         Long userId = userService.findUserId(principal.getUsername());
-        List<Todo> todos = todoService.listAll(keyword, sort, categoryId, authors, completed, userId);
+        boolean isAdmin = principal.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        List<Todo> todos = todoService.listAll(keyword, sort, categoryId, authors, completed, isAdmin ? null : userId);
         String csv = buildCsv(todos);
         byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
 
@@ -340,7 +348,9 @@ public class TodoController {
     private Todo toEntity(TodoForm form, Long userId) {
         Todo todo = new Todo();
         todo.setId(form.getId());
-        todo.setUserId(userId);
+        if (userId != null) {
+            todo.setUserId(userId);
+        }
         todo.setAuthor(form.getAuthor());
         todo.setTitle(form.getTitle());
         todo.setDetail(form.getDetail());

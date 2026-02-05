@@ -12,5 +12,7 @@ public interface UserMapper {
 
     int updatePasswordAndRole(@Param("username") String username, @Param("password") String password, @Param("role") String role);
 
+    java.util.List<AppUser> findAll();
+
     int insert(AppUser user);
 }

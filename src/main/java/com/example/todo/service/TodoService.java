@@ -9,14 +9,21 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.example.todo.entity.TodoHistory;
+import com.example.todo.repository.TodoHistoryMapper;
 
 @Service
 public class TodoService {
 
     private final TodoMapper todoMapper;
+    private final TodoHistoryMapper todoHistoryMapper;
+    private final UserService userService;
 
-    public TodoService(TodoMapper todoMapper) {
+    public TodoService(TodoMapper todoMapper, TodoHistoryMapper todoHistoryMapper, UserService userService) {
         this.todoMapper = todoMapper;
+        this.todoHistoryMapper = todoHistoryMapper;
+        this.userService = userService;
     }
 
     public Page<Todo> list(
@@ -54,7 +61,7 @@ public class TodoService {
         return todoMapper.searchAll(safeKeyword, safeSort, categoryId, safeAuthors, completed, userId);
     }
 
-    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwner(#id, principal)")
+    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
     public Todo get(Long id) {
         Todo todo = todoMapper.findById(id);
         if (todo == null) {
@@ -75,9 +82,10 @@ public class TodoService {
         return todo;
     }
 
-    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwner(#id, principal)")
+    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
     public Todo update(Long id, Todo input) {
         Todo existing = get(id);
+        recordAdminEditHistory(existing);
         existing.setAuthor(input.getAuthor());
         existing.setTitle(input.getTitle());
         existing.setDetail(input.getDetail());
@@ -87,7 +95,7 @@ public class TodoService {
         return existing;
     }
 
-    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwner(#id, principal)")
+    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
     public void delete(Long id) {
         todoMapper.delete(id);
     }
@@ -101,11 +109,35 @@ public class TodoService {
         }
     }
 
-    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwner(#id, principal)")
+    @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
     public void toggleCompleted(Long id) {
         Todo existing = get(id);
         boolean next = !existing.isCompleted();
         todoMapper.updateCompleted(id, next);
+    }
+
+    private void recordAdminEditHistory(Todo existing) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication() == null
+            ? null
+            : SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!(principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails)) {
+            return;
+        }
+        boolean isAdmin = userDetails.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            return;
+        }
+        Long editorId = userService.findUserId(userDetails.getUsername());
+        if (editorId == null || editorId.equals(existing.getUserId())) {
+            return;
+        }
+        TodoHistory history = new TodoHistory();
+        history.setTodoId(existing.getId());
+        history.setEditorUserId(editorId);
+        history.setEditedAt(LocalDateTime.now());
+        history.setNote("ADMIN edited other user's todo");
+        todoHistoryMapper.insert(history);
     }
 
     public String normalizeSort(String sortKey) {
@@ -132,7 +164,7 @@ public class TodoService {
         };
     }
 
-    public List<String> listAuthors(Long userId) {
-        return todoMapper.findAuthors(userId);
+    public List<String> listAuthors(Long userId, boolean isAdmin) {
+        return todoMapper.findAuthors(isAdmin ? null : userId);
     }
 }

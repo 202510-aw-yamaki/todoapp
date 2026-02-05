@@ -23,6 +23,12 @@
         WHERE username = #{username}
     </update>
 
+    <select id="findAll" resultType="com.example.todo.entity.AppUser">
+        SELECT id, username, password, role
+        FROM users
+        ORDER BY id ASC
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (username, password, role)
         VALUES (#{username}, #{password}, #{role})

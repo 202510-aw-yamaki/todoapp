@@ -29,4 +29,15 @@ public class TodoSecurityService {
         Long userId = userService.findUserId(userDetails.getUsername());
         return ownerId.equals(userId);
     }
+
+    public boolean isOwnerOrAdmin(Long id, Object principal) {
+        if (principal instanceof UserDetails userDetails) {
+            boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            if (isAdmin) {
+                return true;
+            }
+        }
+        return isOwner(id, principal);
+    }
 }

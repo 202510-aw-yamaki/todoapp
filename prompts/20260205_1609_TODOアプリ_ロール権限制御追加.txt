@@ -1,0 +1,67 @@
+﻿【指示】
+- ADMIN/USERのロールで権限制御を追加する
+- ADMINは全ユーザーのToDo閲覧・編集・削除可能
+- USERは自分のToDoのみ閲覧・編集・削除可能
+- 画面上でロールに応じたメニュー表示を切り替える
+- URLレベルのアクセス制御を追加する
+- ADMINが他ユーザーのToDoを編集した場合は履歴を残す
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- ADMINは全ToDoにアクセス可能
+- USERは自分のToDoのみアクセス可能
+- /admin/** はADMINのみアクセス可能
+- 画面メニューがロールで切り替わる
+- ADMIN編集時に履歴が残る
+
+【非対象（今回はやらないこと）】
+- 監査UIの作成
+- 詳細なユーザー管理（作成/削除）
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/entity/TodoHistory.java
+  - src/main/java/com/example/todo/repository/TodoHistoryMapper.java
+  - src/main/resources/mapper/TodoHistoryMapper.xml
+  - src/main/java/com/example/todo/controller/AdminController.java
+  - src/main/resources/templates/admin-users.html
+- 変更したファイル:
+  - src/main/resources/schema.sql
+  - src/main/java/com/example/todo/service/TodoSecurityService.java
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/service/UserService.java
+  - src/main/java/com/example/todo/repository/UserMapper.java
+  - src/main/resources/mapper/UserMapper.xml
+  - src/main/java/com/example/todo/config/SecurityConfig.java
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- ロールに応じたアクセス制御を追加
+- ADMINの他ユーザー編集時に履歴を保存
+- ADMIN向けのユーザー管理画面を追加
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- ADMINでログインし他ユーザーのToDoを編集できる
+- USERは他ユーザーのToDoに403
+- /admin/users がADMINのみ閲覧可能
+- 編集履歴がtodo_historyに記録される
+
+【説明】
+- @PreAuthorizeで所有者/ADMIN判定を実施
+- ADMIN編集時に履歴テーブルへ記録

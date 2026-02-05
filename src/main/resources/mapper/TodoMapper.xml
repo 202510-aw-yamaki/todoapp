@@ -146,7 +146,11 @@
     <select id="findAuthors" resultType="string">
         SELECT DISTINCT author
         FROM todo
-        WHERE user_id = #{userId}
+        <where>
+            <if test="userId != null">
+                user_id = #{userId}
+            </if>
+        </where>
         ORDER BY author ASC
     </select>
 

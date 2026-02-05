@@ -1,0 +1,71 @@
+﻿【指示】
+- Spring Securityでログイン認証を追加する
+- usersテーブルを作成（id, username, password, role）
+- パスワードはBCryptで保存
+- ログイン画面を作成し、失敗時エラーを表示
+- 未認証ユーザーはログイン画面へリダイレクト
+- ログアウトを実装
+- 静的リソース（CSS/JS/images）は認証不要
+- CSRF保護を有効にし、ログインフォームにCSRFトークンを含める
+- 起動時に【ユーザー名：USER　パスワードadmin】を生成
+- すべての機能実装完了後、上記パスワードが使えなくなるようにする
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- ログイン必須で未認証はログイン画面へ遷移
+- 認証失敗時にエラーメッセージが表示される
+- BCryptでパスワードが保存される
+- 【ユーザー名：USER　パスワードadmin】でログインできる
+- ユーザー名とパスワードが同じ場合は拒否される
+- 静的リソースは認証不要
+- CSRFトークンがフォームに含まれる
+- 開発終了後にパスワードが使えなくなる方針が明記されている
+
+【非対象（今回はやらないこと）】
+- 複数ユーザー管理UI
+- パスワード変更機能
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/entity/AppUser.java
+  - src/main/java/com/example/todo/repository/UserMapper.java
+  - src/main/resources/mapper/UserMapper.xml
+  - src/main/java/com/example/todo/service/UserService.java
+  - src/main/java/com/example/todo/config/SecurityConfig.java
+  - src/main/java/com/example/todo/config/SeedUserRunner.java
+  - src/main/java/com/example/todo/controller/AuthController.java
+  - src/main/resources/templates/login.html
+- 変更したファイル:
+  - pom.xml
+  - src/main/resources/schema.sql
+  - src/main/resources/application.properties
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- Spring Security導入とフォームログイン追加
+- 起動時の開発用ユーザー生成（USER/admin）
+- CSRF有効化とログイン画面追加
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- 未認証でアクセスすると/loginへ遷移
+- USER/adminでログインできる
+- ログアウトできる
+- USER/USERのように同一値は拒否される
+- app.seed-user.enabled=falseで開発用ユーザー生成が無効になることを確認
+
+【説明】
+- 開発用ユーザーは起動時に生成し、app.seed-user.enabledをfalseにすると無効化できる
+- 開発終了後はseedユーザー生成を停止し、パスワードが使えなくなるようにする

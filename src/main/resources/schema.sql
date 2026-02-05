@@ -12,5 +12,6 @@ CREATE TABLE IF NOT EXISTS todo (
     created_at TIMESTAMP NOT NULL,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     category_id BIGINT NOT NULL DEFAULT 1,
+    deadline DATE,
     CONSTRAINT fk_todo_category FOREIGN KEY (category_id) REFERENCES category(id)
 );

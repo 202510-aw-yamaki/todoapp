@@ -3,6 +3,8 @@ package com.example.todo.form;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class TodoForm {
 
@@ -21,6 +23,9 @@ public class TodoForm {
 
     @NotNull(message = "カテゴリは必須です")
     private Long categoryId;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate deadline;
 
     public Long getId() {
         return id;
@@ -60,5 +65,13 @@ public class TodoForm {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDate deadline) {
+        this.deadline = deadline;
     }
 }

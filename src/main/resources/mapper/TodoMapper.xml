@@ -23,6 +23,7 @@
         <result column="title" property="title" />
         <result column="detail" property="detail" />
         <result column="created_at" property="createdAt" />
+        <result column="deadline" property="deadline" />
         <result column="completed" property="completed" />
         <result column="category_id" property="categoryId" />
         <association property="category" javaType="com.example.todo.entity.Category">
@@ -38,6 +39,7 @@
                t.title,
                t.detail,
                t.created_at,
+               t.deadline,
                t.completed,
                t.category_id,
                c.name AS category_name,
@@ -60,6 +62,8 @@
             <when test="sort == 'titleDesc'">title DESC</when>
             <when test="sort == 'completedAsc'">completed ASC</when>
             <when test="sort == 'completedDesc'">completed DESC</when>
+            <when test="sort == 'deadlineAsc'">deadline ASC</when>
+            <when test="sort == 'deadlineDesc'">deadline DESC</when>
             <otherwise>created_at DESC</otherwise>
         </choose>
         LIMIT #{limit} OFFSET #{offset}
@@ -71,6 +75,7 @@
                t.title,
                t.detail,
                t.created_at,
+               t.deadline,
                t.completed,
                t.category_id,
                c.name AS category_name,
@@ -81,8 +86,8 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO todo (author, title, detail, created_at, completed, category_id)
-        VALUES (#{author}, #{title}, #{detail}, #{createdAt}, #{completed}, #{categoryId})
+        INSERT INTO todo (author, title, detail, created_at, completed, category_id, deadline)
+        VALUES (#{author}, #{title}, #{detail}, #{createdAt}, #{completed}, #{categoryId}, #{deadline})
     </insert>
 
     <update id="update">
@@ -91,7 +96,8 @@
             title = #{title},
             detail = #{detail},
             completed = #{completed},
-            category_id = #{categoryId}
+            category_id = #{categoryId},
+            deadline = #{deadline}
         WHERE id = #{id}
     </update>
 

@@ -1,6 +1,9 @@
 ﻿package com.example.todo.entity;
 
 import java.time.LocalDateTime;
+import java.time.chrono.JapaneseDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Todo {
 
@@ -19,6 +22,8 @@ public class Todo {
     private Long categoryId;
 
     private Category category;
+
+    private java.time.LocalDate deadline;
 
     public Long getId() {
         return id;
@@ -82,5 +87,21 @@ public class Todo {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public java.time.LocalDate getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(java.time.LocalDate deadline) {
+        this.deadline = deadline;
+    }
+
+    public String getDeadlineLabel() {
+        if (deadline == null) {
+            return "";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("Gy年MM月dd日", Locale.JAPAN);
+        return formatter.format(JapaneseDate.from(deadline));
     }
 }

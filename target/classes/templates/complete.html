@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>ToDo完了</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        table { border-collapse: collapse; width: 100%; max-width: 720px; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background: #f5f5f5; width: 160px; text-align: left; }
+        .actions { margin-top: 12px; }
+    </style>
+</head>
+<body>
+<h1>ToDo完了</h1>
+<p>上記で登録しました。</p>
+
+<table>
+    <tr>
+        <th>登録者</th>
+        <td th:text="${todo.author}"></td>
+    </tr>
+    <tr>
+        <th>タイトル</th>
+        <td th:text="${todo.title}"></td>
+    </tr>
+    <tr>
+        <th>詳細</th>
+        <td th:text="${todo.detail}"></td>
+    </tr>
+</table>
+
+<div class="actions">
+    <a th:href="@{/todos}">一覧へ</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+﻿【指示】
+- 登録者検索をアコーディオン方式に変更する
+- 登録者を複数選択して検索できるようにする
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- アコーディオン内で登録者を複数選択できる
+- 複数選択条件で検索できる
+
+【非対象（今回はやらないこと）】
+- UIライブラリ導入
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- author条件を複数選択リストに変更しIN句で検索
+- 登録者フィルタをアコーディオンのチェックボックスに変更
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- アコーディオンを開き複数の登録者を選択して検索
+- 選択した登録者のみが一覧表示される
+
+【説明】
+- MyBatisのIN句で複数登録者を検索
+
+【その後の修正】
+・問題点
+- 登録者アコーディオンの開閉で検索フォーム全体が縦に伸び、他の検索UIが崩れる
+
+・修正指示
+- 登録者のアコーディオンだけが下の表を横断するように開く（オーバーレイ表示）
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【確認結果】
+- 登録者アコーディオンのみが下に重なる形で開き、他の検索UIが伸びないことを確認

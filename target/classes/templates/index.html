@@ -15,6 +15,12 @@
         .status-toggle { display: inline-flex; gap: 6px; align-items: center; }
         .status-toggle a { padding: 2px 8px; border: 1px solid #ccc; text-decoration: none; color: #333; border-radius: 12px; }
         .status-toggle .active { background: #1976d2; color: #fff; border-color: #1976d2; }
+        .accordion { position: relative; }
+        .accordion summary { cursor: pointer; border: 1px solid #ccc; border-radius: 6px; padding: 6px 10px; list-style: none; }
+        .accordion summary::-webkit-details-marker { display: none; }
+        .accordion[open] .accordion-panel { display: block; }
+        .accordion-panel { display: none; position: absolute; left: 0; top: 100%; margin-top: 6px; width: 100%; max-width: 100vw; background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 5; }
+        .author-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px 12px; }
         tr.completed { background: #eee; }
         tr.deadline-overdue { background: #f8d7da; }
         tr.deadline-near { background: #fff3cd; }
@@ -43,10 +49,17 @@
         <input type="text" name="q" placeholder="タイトルで検索" th:value="${q}" />
         <input type="hidden" name="sort" th:value="${sort}" />
         <input type="hidden" name="page" value="0" />
-        <select name="author">
-            <option value="" th:selected="${author == null}">全登録者</option>
-            <option th:each="a : ${authors}" th:value="${a}" th:text="${a}" th:selected="${author == a}"></option>
-        </select>
+        <details class="accordion">
+            <summary>登録者を選択</summary>
+            <div class="accordion-panel">
+                <div class="author-list">
+                    <label th:each="a : ${authors}">
+                        <input type="checkbox" name="author" th:value="${a}" th:checked="${author != null && author.contains(a)}" />
+                        <span th:text="${a}"></span>
+                    </label>
+                </div>
+            </div>
+        </details>
         <select name="categoryId">
             <option value="" th:selected="${categoryId == null}">全カテゴリ</option>
             <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${categoryId == c.id}"></option>
@@ -80,7 +93,7 @@
         <input type="hidden" name="q" th:value="${q}" />
         <input type="hidden" name="sort" th:value="${sort}" />
         <input type="hidden" name="categoryId" th:value="${categoryId}" />
-        <input type="hidden" name="author" th:value="${author}" />
+        <input type="hidden" name="author" th:each="a : ${author}" th:value="${a}" />
         <input type="hidden" name="status" th:value="${status}" />
         <input type="hidden" name="page" th:value="${page}" />
         <input type="hidden" name="size" th:value="${size}" />
@@ -165,7 +178,7 @@
                     <input type="hidden" name="q" th:value="${q}" />
                     <input type="hidden" name="sort" th:value="${sort}" />
                     <input type="hidden" name="categoryId" th:value="${categoryId}" />
-                    <input type="hidden" name="author" th:value="${author}" />
+                    <input type="hidden" name="author" th:each="a : ${author}" th:value="${a}" />
                     <input type="hidden" name="status" th:value="${status}" />
                     <input type="hidden" name="page" th:value="${page}" />
                     <input type="hidden" name="size" th:value="${size}" />

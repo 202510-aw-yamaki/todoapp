@@ -23,7 +23,7 @@ public class TodoService {
         String keyword,
         String sortKey,
         Long categoryId,
-        String author,
+        List<String> authors,
         Boolean completed,
         int page,
         int size
@@ -33,9 +33,9 @@ public class TodoService {
         int safeSize = resolveSize(size);
         int offset = safePage * safeSize;
         String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
-        String safeAuthor = StringUtils.hasText(author) ? author : null;
-        int total = todoMapper.count(safeKeyword, categoryId, safeAuthor, completed);
-        List<Todo> rows = todoMapper.searchPage(safeKeyword, safeSort, safeSize, offset, categoryId, safeAuthor, completed);
+        List<String> safeAuthors = (authors == null || authors.isEmpty()) ? null : authors;
+        int total = todoMapper.count(safeKeyword, categoryId, safeAuthors, completed);
+        List<Todo> rows = todoMapper.searchPage(safeKeyword, safeSort, safeSize, offset, categoryId, safeAuthors, completed);
         return new PageImpl<>(rows, PageRequest.of(safePage, safeSize), total);
     }
 

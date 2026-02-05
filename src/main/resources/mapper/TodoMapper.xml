@@ -14,8 +14,11 @@
             <if test="categoryId != null">
                 AND t.category_id = #{categoryId}
             </if>
-            <if test="author != null and author != ''">
-                AND t.author = #{author}
+            <if test="authors != null and authors.size() > 0">
+                AND t.author IN
+                <foreach collection="authors" item="a" open="(" separator="," close=")">
+                    #{a}
+                </foreach>
             </if>
             <if test="completed != null">
                 AND t.completed = #{completed}
@@ -59,8 +62,11 @@
             <if test="categoryId != null">
                 AND t.category_id = #{categoryId}
             </if>
-            <if test="author != null and author != ''">
-                AND t.author = #{author}
+            <if test="authors != null and authors.size() > 0">
+                AND t.author IN
+                <foreach collection="authors" item="a" open="(" separator="," close=")">
+                    #{a}
+                </foreach>
             </if>
             <if test="completed != null">
                 AND t.completed = #{completed}

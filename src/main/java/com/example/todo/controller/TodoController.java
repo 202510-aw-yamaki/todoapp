@@ -43,7 +43,7 @@ public class TodoController {
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
         @RequestParam(name = "categoryId", required = false) Long categoryId,
-        @RequestParam(name = "author", required = false) String author,
+        @RequestParam(name = "author", required = false) List<String> authors,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "page", required = false, defaultValue = "0") int page,
         @RequestParam(name = "size", required = false, defaultValue = "10") int size,
@@ -52,13 +52,13 @@ public class TodoController {
         String safeSort = todoService.normalizeSort(sort);
         int safeSize = todoService.resolveSize(size);
         Boolean completed = resolveCompleted(status);
-        Page<Todo> todoPage = todoService.list(keyword, safeSort, categoryId, author, completed, page, safeSize);
+        Page<Todo> todoPage = todoService.list(keyword, safeSort, categoryId, authors, completed, page, safeSize);
         List<Todo> todos = todoPage.getContent();
         model.addAttribute("todos", todos);
         model.addAttribute("q", keyword);
         model.addAttribute("sort", safeSort);
         model.addAttribute("categoryId", categoryId);
-        model.addAttribute("author", author);
+        model.addAttribute("author", authors);
         model.addAttribute("status", status);
         model.addAttribute("authors", todoService.listAuthors());
         model.addAttribute("categories", categoryService.list());
@@ -147,7 +147,7 @@ public class TodoController {
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
         @RequestParam(name = "categoryId", required = false) Long categoryId,
-        @RequestParam(name = "author", required = false) String author,
+        @RequestParam(name = "author", required = false) List<String> authors,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "page", required = false) Integer page,
         @RequestParam(name = "size", required = false) Integer size,
@@ -163,8 +163,8 @@ public class TodoController {
         if (categoryId != null) {
             redirectAttributes.addAttribute("categoryId", categoryId);
         }
-        if (author != null) {
-            redirectAttributes.addAttribute("author", author);
+        if (authors != null) {
+            redirectAttributes.addAttribute("author", authors);
         }
         if (status != null) {
             redirectAttributes.addAttribute("status", status);
@@ -184,7 +184,7 @@ public class TodoController {
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
         @RequestParam(name = "categoryId", required = false) Long categoryId,
-        @RequestParam(name = "author", required = false) String author,
+        @RequestParam(name = "author", required = false) List<String> authors,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "page", required = false) Integer page,
         @RequestParam(name = "size", required = false) Integer size,
@@ -200,8 +200,8 @@ public class TodoController {
         if (categoryId != null) {
             redirectAttributes.addAttribute("categoryId", categoryId);
         }
-        if (author != null) {
-            redirectAttributes.addAttribute("author", author);
+        if (authors != null) {
+            redirectAttributes.addAttribute("author", authors);
         }
         if (status != null) {
             redirectAttributes.addAttribute("status", status);
@@ -221,7 +221,7 @@ public class TodoController {
         @RequestParam(name = "q", required = false) String keyword,
         @RequestParam(name = "sort", required = false) String sort,
         @RequestParam(name = "categoryId", required = false) Long categoryId,
-        @RequestParam(name = "author", required = false) String author,
+        @RequestParam(name = "author", required = false) List<String> authors,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "page", required = false) Integer page,
         @RequestParam(name = "size", required = false) Integer size,
@@ -237,8 +237,8 @@ public class TodoController {
         if (categoryId != null) {
             redirectAttributes.addAttribute("categoryId", categoryId);
         }
-        if (author != null) {
-            redirectAttributes.addAttribute("author", author);
+        if (authors != null) {
+            redirectAttributes.addAttribute("author", authors);
         }
         if (status != null) {
             redirectAttributes.addAttribute("status", status);

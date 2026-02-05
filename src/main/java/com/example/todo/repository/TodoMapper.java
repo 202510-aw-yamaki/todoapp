@@ -10,7 +10,7 @@ public interface TodoMapper {
     int count(
         @Param("keyword") String keyword,
         @Param("categoryId") Long categoryId,
-        @Param("author") String author,
+        @Param("authors") List<String> authors,
         @Param("completed") Boolean completed
     );
 
@@ -20,7 +20,7 @@ public interface TodoMapper {
         @Param("limit") int limit,
         @Param("offset") int offset,
         @Param("categoryId") Long categoryId,
-        @Param("author") String author,
+        @Param("authors") List<String> authors,
         @Param("completed") Boolean completed
     );
 

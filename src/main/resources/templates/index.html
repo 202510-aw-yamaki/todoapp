@@ -15,6 +15,11 @@
         .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; color: #fff; }
         .badge.done { background: #666; }
         .badge.todo { background: #1976d2; }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; }
+        .modal { background: #fff; padding: 20px; border-radius: 8px; min-width: 320px; max-width: 480px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .modal h2 { margin: 0 0 12px; font-size: 1.1em; }
+        .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px; }
+        .modal-backdrop.show { display: flex; }
     </style>
 </head>
 <body>
@@ -75,13 +80,71 @@
                     <input type="hidden" name="sort" th:value="${sort}" />
                     <button type="submit" th:text="${todo.completed} ? '未完了に戻す' : '完了にする'"></button>
                 </form>
-                <form th:action="@{/todos/{id}/delete(id=${todo.id})}" method="post">
-                    <button type="submit" onclick="return confirm('削除しますか？')">削除</button>
+                <form th:action="@{/todos/{id}/delete(id=${todo.id})}" method="post" class="delete-form">
+                    <button type="submit" data-delete="true">削除</button>
                 </form>
             </div>
         </td>
     </tr>
     </tbody>
 </table>
+
+<div id="deleteModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal">
+        <h2 id="deleteModalTitle">本当に削除しますか？</h2>
+        <p>この操作は取り消せません。</p>
+        <div class="modal-actions">
+            <button type="button" id="cancelDelete">キャンセル</button>
+            <button type="button" id="confirmDelete">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const modal = document.getElementById('deleteModal');
+        const cancelBtn = document.getElementById('cancelDelete');
+        const confirmBtn = document.getElementById('confirmDelete');
+        let targetForm = null;
+
+        function openModal(form) {
+            targetForm = form;
+            modal.classList.add('show');
+            confirmBtn.focus();
+            document.addEventListener('keydown', handleKeydown);
+        }
+
+        function closeModal() {
+            modal.classList.remove('show');
+            targetForm = null;
+            document.removeEventListener('keydown', handleKeydown);
+        }
+
+        function handleKeydown(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        }
+
+        document.querySelectorAll('form.delete-form').forEach((form) => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                openModal(form);
+            });
+        });
+
+        cancelBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        confirmBtn.addEventListener('click', () => {
+            if (targetForm) {
+                targetForm.submit();
+            }
+        });
+    })();
+</script>
 </body>
 </html>

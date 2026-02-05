@@ -1,0 +1,62 @@
+﻿【指示】
+- 既存の仕様書・設計書・画面遷移・各画面プロンプトに基づきToDoアプリを実装する
+- CRUD（一覧/登録/確認/完了/編集/削除）を実装する
+- 検索・ソート機能付きの一覧画面を実装する
+- H2コンソール設定を有効化する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- 指定されたファイル構成に沿ったソースコードが作成されている
+- 一覧/登録/確認/完了/編集/削除が動作する
+- 検索/ソートが動作する
+- H2コンソールでデータ確認ができる
+
+【非対象（今回はやらないこと）】
+- 認証・認可
+- 画面デザインの詳細な作り込み
+
+【差分】
+- 作成したファイル:
+  - pom.xml
+  - src/main/java/com/example/todo/TodoApplication.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/entity/Todo.java
+  - src/main/java/com/example/todo/repository/TodoRepository.java
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/resources/application.properties
+  - src/main/resources/templates/index.html
+  - src/main/resources/templates/create.html
+  - src/main/resources/templates/confirm.html
+  - src/main/resources/templates/complete.html
+- 変更したファイル:
+  - （なし）
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- Spring Boot 3.x + H2 + Thymeleafの最小構成でToDoアプリを実装
+- 一覧検索/ソート、登録→確認→完了の画面遷移を実装
+- 編集/削除とPRGによる二重送信防止を実装
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- http://localhost:8080/todos にアクセス
+- 新規登録→確認→完了→一覧に戻る
+- 一覧で検索/ソートができる
+- 編集/削除ができる
+- http://localhost:8080/h2-console でDB確認
+
+【説明】
+- Controller/Service/Repository/Entity を分離した標準的なMVC構成
+- 画面遷移は一覧→登録→確認→完了→一覧、戻る操作を実装
+- 完了画面はPRGで二重登録を防止

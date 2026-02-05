@@ -1,0 +1,8 @@
+﻿開発前提条件として
+
+- Java 17以上
+- Spring Boot 3.x
+- Spring Web MVC
+- Spring Data JPA
+- H2 Database（インメモリ）
+- Thymeleaf テンプレートエンジン

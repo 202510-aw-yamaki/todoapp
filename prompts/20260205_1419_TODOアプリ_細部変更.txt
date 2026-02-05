@@ -1,0 +1,52 @@
+﻿【指示】
+- 操作カラムの削除ボタンを削除する
+- 完了/未完了のみを表示するトグルスイッチを追加する
+- bulkSelectの高さを25pxにする
+- 登録者での検索を追加する（登録者プルダウンは自動取得）
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- 削除ボタンが操作列からなくなっている
+- 完了/未完了のみ表示が切替できる
+- bulkSelectの高さが25pxになっている
+- 登録者で絞り込み検索ができる
+
+【非対象（今回はやらないこと）】
+- 権限による削除制御
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- 登録者プルダウン用のデータ取得を追加
+- ステータス絞り込みのトグルUIと検索条件を追加
+- 操作列から削除ボタンを除去
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- 一覧で削除ボタンが消えていること
+- 完了/未完了/全ての切替ができること
+- 登録者プルダウンで絞り込めること
+- bulkSelectの高さが25pxであること
+
+【説明】
+- authorとstatusを条件に追加し、一覧検索を拡張

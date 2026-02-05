@@ -11,6 +11,10 @@
         .actions { display: flex; gap: 8px; }
         .topbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
         .muted { color: #666; width: 240px; display: inline-block; }
+        #bulkSelect { height: 25px; }
+        .status-toggle { display: inline-flex; gap: 6px; align-items: center; }
+        .status-toggle a { padding: 2px 8px; border: 1px solid #ccc; text-decoration: none; color: #333; border-radius: 12px; }
+        .status-toggle .active { background: #1976d2; color: #fff; border-color: #1976d2; }
         tr.completed { background: #eee; }
         tr.deadline-overdue { background: #f8d7da; }
         tr.deadline-near { background: #fff3cd; }
@@ -39,6 +43,10 @@
         <input type="text" name="q" placeholder="タイトルで検索" th:value="${q}" />
         <input type="hidden" name="sort" th:value="${sort}" />
         <input type="hidden" name="page" value="0" />
+        <select name="author">
+            <option value="" th:selected="${author == null}">全登録者</option>
+            <option th:each="a : ${authors}" th:value="${a}" th:text="${a}" th:selected="${author == a}"></option>
+        </select>
         <select name="categoryId">
             <option value="" th:selected="${categoryId == null}">全カテゴリ</option>
             <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${categoryId == c.id}"></option>
@@ -51,6 +59,14 @@
 </div>
 
 <div class="bulk-bar">
+    <div class="status-toggle" role="group" aria-label="ステータス絞り込み">
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status='completed', page=0, size=${size})}"
+           th:classappend="${status == 'completed'} ? 'active'">完了のみ</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status='active', page=0, size=${size})}"
+           th:classappend="${status == 'active'} ? 'active'">未完了のみ</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, page=0, size=${size})}"
+           th:classappend="${status == null || status == ''} ? 'active'">全て</a>
+    </div>
     <label>
         一括チェック:
         <select id="bulkSelect">
@@ -64,6 +80,8 @@
         <input type="hidden" name="q" th:value="${q}" />
         <input type="hidden" name="sort" th:value="${sort}" />
         <input type="hidden" name="categoryId" th:value="${categoryId}" />
+        <input type="hidden" name="author" th:value="${author}" />
+        <input type="hidden" name="status" th:value="${status}" />
         <input type="hidden" name="page" th:value="${page}" />
         <input type="hidden" name="size" th:value="${size}" />
         <button type="submit" id="bulkDeleteBtn" disabled>選択した項目を削除</button>
@@ -73,11 +91,11 @@
 <div class="bulk-bar">
     <span class="muted" th:text="|全${count}件中 ${start}-${end}件|"></span>
     <div class="actions" role="group" aria-label="ページサイズ">
-        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=10)}">10</a>
-        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=20)}">20</a>
-        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=30)}">30</a>
-        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=50)}">50</a>
-        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=100)}">100</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=0, size=10)}">10</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=0, size=20)}">20</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=0, size=30)}">30</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=0, size=50)}">50</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=0, size=100)}">100</a>
     </div>
 </div>
 
@@ -87,23 +105,23 @@
         <th><input type="checkbox" id="selectAll" /></th>
         <th>No</th>
         <th>
-            <a th:href="@{/todos(q=${q}, sort=${sort == 'titleAsc' ? 'titleDesc' : 'titleAsc'}, categoryId=${categoryId}, page=${page}, size=${size})}">タイトル</a>
+            <a th:href="@{/todos(q=${q}, sort=${sort == 'titleAsc' ? 'titleDesc' : 'titleAsc'}, categoryId=${categoryId}, author=${author}, status=${status}, page=${page}, size=${size})}">タイトル</a>
             <span th:if="${sort == 'titleAsc'}">▲</span>
             <span th:if="${sort == 'titleDesc'}">▼</span>
         </th>
         <th>登録者</th>
         <th>
-            <a th:href="@{/todos(q=${q}, sort=${sort == 'deadlineAsc' ? 'deadlineDesc' : 'deadlineAsc'}, categoryId=${categoryId}, page=${page}, size=${size})}">期限日</a>
+            <a th:href="@{/todos(q=${q}, sort=${sort == 'deadlineAsc' ? 'deadlineDesc' : 'deadlineAsc'}, categoryId=${categoryId}, author=${author}, status=${status}, page=${page}, size=${size})}">期限日</a>
             <span th:if="${sort == 'deadlineAsc'}">▲</span>
             <span th:if="${sort == 'deadlineDesc'}">▼</span>
         </th>
         <th>
-            <a th:href="@{/todos(q=${q}, sort=${sort == 'createdAtAsc' ? 'createdAtDesc' : 'createdAtAsc'}, categoryId=${categoryId}, page=${page}, size=${size})}">作成日</a>
+            <a th:href="@{/todos(q=${q}, sort=${sort == 'createdAtAsc' ? 'createdAtDesc' : 'createdAtAsc'}, categoryId=${categoryId}, author=${author}, status=${status}, page=${page}, size=${size})}">作成日</a>
             <span th:if="${sort == 'createdAtAsc'}">▲</span>
             <span th:if="${sort == 'createdAtDesc'}">▼</span>
         </th>
         <th>
-            <a th:href="@{/todos(q=${q}, sort=${sort == 'completedAsc' ? 'completedDesc' : 'completedAsc'}, categoryId=${categoryId}, page=${page}, size=${size})}">ステータス</a>
+            <a th:href="@{/todos(q=${q}, sort=${sort == 'completedAsc' ? 'completedDesc' : 'completedAsc'}, categoryId=${categoryId}, author=${author}, status=${status}, page=${page}, size=${size})}">ステータス</a>
             <span th:if="${sort == 'completedAsc'}">▲</span>
             <span th:if="${sort == 'completedDesc'}">▼</span>
         </th>
@@ -147,17 +165,11 @@
                     <input type="hidden" name="q" th:value="${q}" />
                     <input type="hidden" name="sort" th:value="${sort}" />
                     <input type="hidden" name="categoryId" th:value="${categoryId}" />
+                    <input type="hidden" name="author" th:value="${author}" />
+                    <input type="hidden" name="status" th:value="${status}" />
                     <input type="hidden" name="page" th:value="${page}" />
                     <input type="hidden" name="size" th:value="${size}" />
                     <button type="submit" th:text="${todo.completed} ? '未完了に戻す' : '完了にする'"></button>
-                </form>
-                <form th:action="@{/todos/{id}/delete(id=${todo.id})}" method="post" class="delete-form">
-                    <input type="hidden" name="q" th:value="${q}" />
-                    <input type="hidden" name="sort" th:value="${sort}" />
-                    <input type="hidden" name="categoryId" th:value="${categoryId}" />
-                    <input type="hidden" name="page" th:value="${page}" />
-                    <input type="hidden" name="size" th:value="${size}" />
-                    <button type="submit" data-delete="true">削除</button>
                 </form>
             </div>
         </td>
@@ -167,15 +179,15 @@
 
 <div class="pager" th:if="${totalPages > 1}">
     <span class="disabled" th:if="${page == 0}">前へ</span>
-    <a th:if="${page > 0}" th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=${page - 1}, size=${size})}">前へ</a>
+    <a th:if="${page > 0}" th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=${page - 1}, size=${size})}">前へ</a>
 
     <span th:each="p : ${#numbers.sequence(0, totalPages - 1)}">
         <span class="current" th:if="${p == page}" th:text="${p + 1}"></span>
-        <a th:if="${p != page}" th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=${p}, size=${size})}" th:text="${p + 1}"></a>
+        <a th:if="${p != page}" th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=${p}, size=${size})}" th:text="${p + 1}"></a>
     </span>
 
     <span class="disabled" th:if="${page + 1 >= totalPages}">次へ</span>
-    <a th:if="${page + 1 < totalPages}" th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=${page + 1}, size=${size})}">次へ</a>
+    <a th:if="${page + 1 < totalPages}" th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=${page + 1}, size=${size})}">次へ</a>
 </div>
 
 <div id="deleteModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">

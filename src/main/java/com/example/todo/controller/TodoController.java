@@ -164,6 +164,35 @@ public class TodoController {
         return "redirect:/todos";
     }
 
+    @PostMapping("/todos/bulk-delete")
+    public String bulkDelete(
+        @RequestParam(name = "ids", required = false) List<Long> ids,
+        @RequestParam(name = "q", required = false) String keyword,
+        @RequestParam(name = "sort", required = false) String sort,
+        @RequestParam(name = "categoryId", required = false) Long categoryId,
+        @RequestParam(name = "page", required = false) Integer page,
+        @RequestParam(name = "size", required = false) Integer size,
+        RedirectAttributes redirectAttributes
+    ) {
+        todoService.deleteBatch(ids);
+        if (keyword != null) {
+            redirectAttributes.addAttribute("q", keyword);
+        }
+        if (sort != null) {
+            redirectAttributes.addAttribute("sort", sort);
+        }
+        if (categoryId != null) {
+            redirectAttributes.addAttribute("categoryId", categoryId);
+        }
+        if (page != null) {
+            redirectAttributes.addAttribute("page", page);
+        }
+        if (size != null) {
+            redirectAttributes.addAttribute("size", size);
+        }
+        return "redirect:/todos";
+    }
+
     @PostMapping("/todos/{id}/toggle")
     public String toggle(
         @PathVariable Long id,

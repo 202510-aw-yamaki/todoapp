@@ -65,6 +65,13 @@ public class TodoService {
         todoMapper.delete(id);
     }
 
+    public void deleteBatch(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        todoMapper.deleteBatch(ids);
+    }
+
     public void toggleCompleted(Long id) {
         Todo existing = get(id);
         boolean next = !existing.isCompleted();

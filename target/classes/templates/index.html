@@ -27,9 +27,11 @@
         .pager a, .pager span { padding: 4px 8px; border: 1px solid #ccc; text-decoration: none; color: #333; }
         .pager .current { background: #1976d2; color: #fff; border-color: #1976d2; }
         .pager .disabled { color: #999; border-color: #eee; }
+        .bulk-bar { display: flex; gap: 12px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
+        .bulk-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
-<body>
+<body th:attr="data-today=${today}">
 <h1>ToDo一覧</h1>
 
 <div class="topbar">
@@ -54,11 +56,32 @@
     <a th:href="@{/todos/new}">新規登録</a>
 </div>
 
+<div class="bulk-bar">
+    <label>
+        一括チェック:
+        <select id="bulkSelect">
+            <option value="">選択してください</option>
+            <option value="completed">ステータスが完了</option>
+            <option value="overdue">期限が過去のもの</option>
+        </select>
+    </label>
+    <button type="button" id="applyBulkSelect">まとめてチェック</button>
+    <form id="bulkDeleteForm" th:action="@{/todos/bulk-delete}" method="post">
+        <input type="hidden" name="q" th:value="${q}" />
+        <input type="hidden" name="sort" th:value="${sort}" />
+        <input type="hidden" name="categoryId" th:value="${categoryId}" />
+        <input type="hidden" name="page" th:value="${page}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <button type="submit" id="bulkDeleteBtn" disabled>選択した項目を削除</button>
+    </form>
+</div>
+
 <p class="muted" th:text="|全${count}件中 ${start}-${end}件|"></p>
 
 <table>
     <thead>
     <tr>
+        <th><input type="checkbox" id="selectAll" /></th>
         <th>No</th>
         <th>
             <a th:href="@{/todos(q=${q}, sort=${sort == 'titleAsc' ? 'titleDesc' : 'titleAsc'}, categoryId=${categoryId}, page=${page}, size=${size})}">タイトル</a>
@@ -87,10 +110,18 @@
     </thead>
     <tbody>
     <tr th:if="${#lists.isEmpty(todos)}">
-        <td colspan="8" class="muted">データはありません</td>
+        <td colspan="9" class="muted">データはありません</td>
     </tr>
     <tr th:each="todo, stat : ${todos}"
         th:classappend="|${todo.completed ? 'completed' : ''} ${todo.deadline != null and todo.deadline.isBefore(today) ? 'deadline-overdue' : (todo.deadline != null and !todo.deadline.isBefore(today) and !todo.deadline.isAfter(nearLimit) ? 'deadline-near' : '')}|">
+        <td>
+            <input type="checkbox"
+                   class="row-check"
+                   form="bulkDeleteForm"
+                   name="ids"
+                   th:value="${todo.id}"
+                   th:attr="data-completed=${todo.completed}, data-deadline=${todo.deadline}" />
+        </td>
         <td th:text="${stat.count}"></td>
         <td th:text="${todo.title}"></td>
         <td th:text="${todo.author}"></td>
@@ -157,6 +188,13 @@
 
 <script>
     (function () {
+        const todayStr = document.body.getAttribute('data-today');
+        const today = todayStr ? new Date(todayStr) : null;
+        const bulkSelect = document.getElementById('bulkSelect');
+        const applyBulkSelect = document.getElementById('applyBulkSelect');
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+        const selectAll = document.getElementById('selectAll');
+        const rowChecks = Array.from(document.querySelectorAll('.row-check'));
         const modal = document.getElementById('deleteModal');
         const cancelBtn = document.getElementById('cancelDelete');
         const confirmBtn = document.getElementById('confirmDelete');
@@ -181,8 +219,67 @@
             }
         }
 
-        document.querySelectorAll('form.delete-form').forEach((form) => {
+        function updateBulkState() {
+            const checked = rowChecks.filter((c) => c.checked).length;
+            if (bulkDeleteBtn) {
+                bulkDeleteBtn.disabled = checked === 0;
+            }
+            if (selectAll) {
+                if (checked === 0) {
+                    selectAll.indeterminate = false;
+                    selectAll.checked = false;
+                } else if (checked === rowChecks.length) {
+                    selectAll.indeterminate = false;
+                    selectAll.checked = true;
+                } else {
+                    selectAll.indeterminate = true;
+                }
+            }
+        }
+
+        if (selectAll) {
+            selectAll.addEventListener('change', () => {
+                rowChecks.forEach((c) => {
+                    c.checked = selectAll.checked;
+                });
+                updateBulkState();
+            });
+        }
+
+        rowChecks.forEach((c) => {
+            c.addEventListener('change', updateBulkState);
+        });
+
+        if (applyBulkSelect) {
+            applyBulkSelect.addEventListener('click', () => {
+                const mode = bulkSelect ? bulkSelect.value : '';
+                if (!mode) {
+                    return;
+                }
+                rowChecks.forEach((c) => {
+                    if (mode === 'completed') {
+                        c.checked = c.dataset.completed === 'true';
+                        return;
+                    }
+                    if (mode === 'overdue') {
+                        if (!today || !c.dataset.deadline) {
+                            c.checked = false;
+                            return;
+                        }
+                        const d = new Date(c.dataset.deadline);
+                        c.checked = d < today;
+                    }
+                });
+                updateBulkState();
+            });
+        }
+
+        document.querySelectorAll('form.delete-form, #bulkDeleteForm').forEach((form) => {
             form.addEventListener('submit', (e) => {
+                if (form.id === 'bulkDeleteForm' && bulkDeleteBtn && bulkDeleteBtn.disabled) {
+                    e.preventDefault();
+                    return;
+                }
                 e.preventDefault();
                 openModal(form);
             });
@@ -199,6 +296,8 @@
                 targetForm.submit();
             }
         });
+
+        updateBulkState();
     })();
 </script>
 </body>

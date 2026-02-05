@@ -26,4 +26,6 @@ public interface TodoMapper {
     int delete(@Param("id") Long id);
 
     int updateCompleted(@Param("id") Long id, @Param("completed") boolean completed);
+
+    int deleteBatch(@Param("ids") List<Long> ids);
 }

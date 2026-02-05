@@ -1,0 +1,58 @@
+﻿【指示】
+- 一括削除機能を追加する
+- 各行にチェックボックスを追加する
+- 全選択チェックボックスでON/OFFできるようにする
+- 選択した項目を削除ボタンを配置する
+- 削除前に確認ダイアログを表示する
+- 選択IDをリストで送信して一括削除する
+- プルダウン「ステータスが完了」「期限が過去のもの」を選択し一括チェックできるボタンを追加する
+- 1件も選択されていない場合は削除ボタンを無効化する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- チェックボックスと全選択が動作する
+- 一括削除ボタンが選択時のみ有効になる
+- 確認ダイアログ後に一括削除できる
+- ステータス完了/期限切れで一括チェックができる
+
+【非対象（今回はやらないこと）】
+- 複数条件の一括選択
+- 権限による削除制御
+
+【差分】
+- 作成したファイル:
+  - （なし）
+- 変更したファイル:
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/templates/index.html
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- 一括削除用のMyBatis IN削除を追加
+- 一覧にチェックボックスと一括操作UIを追加
+- 削除確認モーダルを一括削除にも適用
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- 一覧でチェックボックスをON
+- 一括削除ボタンが有効になることを確認
+- 確認ダイアログOKで削除されることを確認
+- 「ステータスが完了」「期限が過去のもの」で一括チェックできること
+
+【説明】
+- 一括削除は選択IDのリスト送信とMyBatisのIN句で実装
+- チェック未選択時は削除ボタンを無効化

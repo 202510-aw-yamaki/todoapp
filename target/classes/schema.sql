@@ -11,16 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS todo_history (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    todo_id BIGINT NOT NULL,
-    editor_user_id BIGINT NOT NULL,
-    edited_at TIMESTAMP NOT NULL,
-    note VARCHAR(200) NOT NULL,
-    CONSTRAINT fk_history_todo FOREIGN KEY (todo_id) REFERENCES todo(id),
-    CONSTRAINT fk_history_user FOREIGN KEY (editor_user_id) REFERENCES users(id)
-);
-
 CREATE TABLE IF NOT EXISTS todo (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL DEFAULT 1,
@@ -33,4 +23,14 @@ CREATE TABLE IF NOT EXISTS todo (
     deadline DATE,
     CONSTRAINT fk_todo_category FOREIGN KEY (category_id) REFERENCES category(id),
     CONSTRAINT fk_todo_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS todo_history (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    todo_id BIGINT NOT NULL,
+    editor_user_id BIGINT NOT NULL,
+    edited_at TIMESTAMP NOT NULL,
+    note VARCHAR(200) NOT NULL,
+    CONSTRAINT fk_history_todo FOREIGN KEY (todo_id) REFERENCES todo(id),
+    CONSTRAINT fk_history_user FOREIGN KEY (editor_user_id) REFERENCES users(id)
 );

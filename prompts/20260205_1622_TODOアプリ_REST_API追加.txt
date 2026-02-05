@@ -1,0 +1,58 @@
+﻿【指示】
+- /api/todos のREST APIを追加する
+- GET/POST/PUT/DELETEでCRUDを提供する
+- JSONでリクエスト/レスポンスする
+- HTTPステータス（200,201,204,400,404）を適切に返す
+- レスポンスはsuccess/message/dataの統一形式
+- CORS設定でフロントからアクセス可能にする
+- springdoc-openapiを設定してSwaggerを生成する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- /api/todos がRESTで動作する
+- Swagger UI が表示できる
+- エラーレスポンスが統一形式
+- CORSが有効
+
+【非対象（今回はやらないこと）】
+- OpenCSV等のライブラリ導入
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/api/ApiResponse.java
+  - src/main/java/com/example/todo/api/TodoApiRequest.java
+  - src/main/java/com/example/todo/api/TodoApiController.java
+  - src/main/java/com/example/todo/api/ApiExceptionHandler.java
+  - src/main/java/com/example/todo/config/CorsConfig.java
+- 変更したファイル:
+  - pom.xml
+  - src/main/java/com/example/todo/config/SecurityConfig.java
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- REST APIと統一レスポンスを追加
+- Swagger (springdoc-openapi) を導入
+- CORS設定を追加
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- GET /api/todos が200で返る
+- POST /api/todos が201で返る
+- PUT /api/todos/{id} が200で返る
+- DELETE /api/todos/{id} が204で返る
+- /swagger-ui/index.html が表示できる
+
+【説明】
+- ResponseEntityでステータスと統一レスポンスを返却
+- @RestControllerでJSON APIを提供

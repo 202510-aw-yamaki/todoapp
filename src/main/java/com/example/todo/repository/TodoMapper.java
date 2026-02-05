@@ -7,15 +7,24 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface TodoMapper {
-    int count(@Param("keyword") String keyword, @Param("categoryId") Long categoryId);
+    int count(
+        @Param("keyword") String keyword,
+        @Param("categoryId") Long categoryId,
+        @Param("author") String author,
+        @Param("completed") Boolean completed
+    );
 
     List<Todo> searchPage(
         @Param("keyword") String keyword,
         @Param("sort") String sort,
         @Param("limit") int limit,
         @Param("offset") int offset,
-        @Param("categoryId") Long categoryId
+        @Param("categoryId") Long categoryId,
+        @Param("author") String author,
+        @Param("completed") Boolean completed
     );
+
+    List<String> findAuthors();
 
     Todo findById(@Param("id") Long id);
 

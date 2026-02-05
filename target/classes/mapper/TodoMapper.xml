@@ -14,6 +14,12 @@
             <if test="categoryId != null">
                 AND t.category_id = #{categoryId}
             </if>
+            <if test="author != null and author != ''">
+                AND t.author = #{author}
+            </if>
+            <if test="completed != null">
+                AND t.completed = #{completed}
+            </if>
         </where>
     </select>
 
@@ -53,6 +59,12 @@
             <if test="categoryId != null">
                 AND t.category_id = #{categoryId}
             </if>
+            <if test="author != null and author != ''">
+                AND t.author = #{author}
+            </if>
+            <if test="completed != null">
+                AND t.completed = #{completed}
+            </if>
         </where>
         ORDER BY
         <choose>
@@ -67,6 +79,12 @@
             <otherwise>created_at DESC</otherwise>
         </choose>
         LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findAuthors" resultType="string">
+        SELECT DISTINCT author
+        FROM todo
+        ORDER BY author ASC
     </select>
 
     <select id="findById" resultMap="TodoResultMap">

@@ -19,14 +19,23 @@ public class TodoService {
         this.todoMapper = todoMapper;
     }
 
-    public Page<Todo> list(String keyword, String sortKey, Long categoryId, int page, int size) {
+    public Page<Todo> list(
+        String keyword,
+        String sortKey,
+        Long categoryId,
+        String author,
+        Boolean completed,
+        int page,
+        int size
+    ) {
         String safeSort = normalizeSort(sortKey);
         int safePage = Math.max(page, 0);
         int safeSize = resolveSize(size);
         int offset = safePage * safeSize;
         String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
-        int total = todoMapper.count(safeKeyword, categoryId);
-        List<Todo> rows = todoMapper.searchPage(safeKeyword, safeSort, safeSize, offset, categoryId);
+        String safeAuthor = StringUtils.hasText(author) ? author : null;
+        int total = todoMapper.count(safeKeyword, categoryId, safeAuthor, completed);
+        List<Todo> rows = todoMapper.searchPage(safeKeyword, safeSort, safeSize, offset, categoryId, safeAuthor, completed);
         return new PageImpl<>(rows, PageRequest.of(safePage, safeSize), total);
     }
 
@@ -100,5 +109,9 @@ public class TodoService {
             case 10, 20, 30, 50, 100 -> size;
             default -> 10;
         };
+    }
+
+    public List<String> listAuthors() {
+        return todoMapper.findAuthors();
     }
 }

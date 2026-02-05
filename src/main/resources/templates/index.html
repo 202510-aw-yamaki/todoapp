@@ -10,7 +10,7 @@
         th { background: #f5f5f5; }
         .actions { display: flex; gap: 8px; }
         .topbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
-        .muted { color: #666; }
+        .muted { color: #666; width: 240px; display: inline-block; }
         tr.completed { background: #eee; }
         tr.deadline-overdue { background: #f8d7da; }
         tr.deadline-near { background: #fff3cd; }
@@ -43,13 +43,7 @@
             <option value="" th:selected="${categoryId == null}">全カテゴリ</option>
             <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${categoryId == c.id}"></option>
         </select>
-        <select name="size">
-            <option value="10" th:selected="${size == 10}">10件</option>
-            <option value="20" th:selected="${size == 20}">20件</option>
-            <option value="30" th:selected="${size == 30}">30件</option>
-            <option value="50" th:selected="${size == 50}">50件</option>
-            <option value="100" th:selected="${size == 100}">100件</option>
-        </select>
+        <input type="hidden" name="size" th:value="${size}" />
         <button type="submit">検索</button>
         <a th:href="@{/todos}">クリア</a>
     </form>
@@ -76,7 +70,16 @@
     </form>
 </div>
 
-<p class="muted" th:text="|全${count}件中 ${start}-${end}件|"></p>
+<div class="bulk-bar">
+    <span class="muted" th:text="|全${count}件中 ${start}-${end}件|"></span>
+    <div class="actions" role="group" aria-label="ページサイズ">
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=10)}">10</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=20)}">20</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=30)}">30</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=50)}">50</a>
+        <a th:href="@{/todos(q=${q}, sort=${sort}, categoryId=${categoryId}, page=0, size=100)}">100</a>
+    </div>
+</div>
 
 <table>
     <thead>

@@ -25,6 +25,14 @@ public class Todo {
 
     private java.time.LocalDate deadline;
 
+    public String getCreatedAtLabel() {
+        if (createdAt == null) {
+            return "";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("Gy年MM月dd日", Locale.JAPAN);
+        return formatter.format(JapaneseDate.from(createdAt.toLocalDate()));
+    }
+
     public Long getId() {
         return id;
     }

@@ -95,7 +95,7 @@
         <td th:text="${todo.title}"></td>
         <td th:text="${todo.author}"></td>
         <td th:text="${todo.deadlineLabel}"></td>
-        <td th:text="${#temporals.format(todo.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${todo.createdAtLabel}"></td>
         <td>
             <span class="badge done" th:if="${todo.completed}">完了</span>
             <span class="badge todo" th:unless="${todo.completed}">未完了</span>

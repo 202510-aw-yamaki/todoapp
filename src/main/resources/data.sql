@@ -79,3 +79,12 @@ SET category_id = CASE MOD(id, 4)
     WHEN 2 THEN 2
     ELSE 3
 END;
+
+-- 作成日と期限日をランダムに設定（テスト用・最終的には取り除く前提）
+UPDATE todo
+SET created_at = DATEADD('DAY', - (MOD(id, 20)), DATEADD('HOUR', MOD(id, 24), CURRENT_TIMESTAMP)),
+    deadline = CASE MOD(id, 3)
+        WHEN 0 THEN DATEADD('DAY', - (MOD(id, 5) + 1), CURRENT_DATE)  -- 期限切れ
+        WHEN 1 THEN DATEADD('DAY', MOD(id, 3), CURRENT_DATE)          -- 期限近い（3日以内）
+        ELSE DATEADD('DAY', (MOD(id, 10) + 5), CURRENT_DATE)          -- 期限余裕
+    END;

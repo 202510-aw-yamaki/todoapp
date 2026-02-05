@@ -56,6 +56,7 @@ public class TodoService {
         existing.setTitle(input.getTitle());
         existing.setDetail(input.getDetail());
         existing.setCategoryId(input.getCategoryId());
+        existing.setDeadline(input.getDeadline());
         todoMapper.update(existing);
         return existing;
     }

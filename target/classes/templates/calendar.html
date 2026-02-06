@@ -29,8 +29,7 @@
 
         <div class="calendar-grid">
             <div class="item day" th:each="d : ${days}"
-                 th:classappend="${d.dayOfWeek.name() == 'SUNDAY'} ? 'sun' : (${d.dayOfWeek.name() == 'SATURDAY'} ? 'sat' : '')"
-                 th:classappend="${d.holiday} ? 'holiday' : ''"
+                 th:classappend="${d.dayOfWeek.name() == 'SUNDAY'} ? ' sun' : (${d.dayOfWeek.name() == 'SATURDAY'} ? ' sat' : '') + (${d.holiday} ? ' holiday' : '')"
                  th:attr="data-date=${d.date}, data-duration='450'">
                 <button type="button" class="day-button">
                     <div class="day-header">

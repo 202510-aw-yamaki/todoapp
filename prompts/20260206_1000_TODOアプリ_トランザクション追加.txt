@@ -1,0 +1,48 @@
+﻿【指示】
+- TodoServiceに@Transactionalを適用する
+- ToDoと履歴を同一トランザクションで保存する
+- どちらかで例外が発生したらロールバックする
+- 読み取り専用メソッドは@Transactional(readOnly = true)
+- rollbackForでチェック例外もロールバック対象
+- 監査ログはREQUIRES_NEWで記録し本体ロールバックでも残す
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- TodoServiceの更新系がトランザクションで動作する
+- 履歴が同一トランザクションで保存される
+- 監査ログがREQUIRES_NEWで保存される
+- 読み取りはreadOnlyが適用される
+
+【非対象（今回はやらないこと）】
+- 分散トランザクション
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/service/AuditLogService.java
+- 変更したファイル:
+  - src/main/java/com/example/todo/service/TodoService.java
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- Service層に@Transactionalを適用
+- 履歴は同一トランザクション、監査ログはREQUIRES_NEW
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- 更新処理で例外を発生させ、Todoと履歴がロールバックすることを確認
+- 監査ログが別トランザクションで残ることを確認
+
+【説明】
+- 本体更新はrollbackForで例外時にロールバック
+- 監査ログは別トランザクションで残す

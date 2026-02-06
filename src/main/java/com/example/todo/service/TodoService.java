@@ -1,31 +1,35 @@
 ﻿package com.example.todo.service;
 
 import com.example.todo.entity.Todo;
+import com.example.todo.repository.TodoHistoryMapper;
 import com.example.todo.repository.TodoMapper;
+import com.example.todo.entity.TodoHistory;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.example.todo.entity.TodoHistory;
-import com.example.todo.repository.TodoHistoryMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 public class TodoService {
 
     private final TodoMapper todoMapper;
+    private final AuditLogService auditLogService;
     private final TodoHistoryMapper todoHistoryMapper;
     private final UserService userService;
 
-    public TodoService(TodoMapper todoMapper, TodoHistoryMapper todoHistoryMapper, UserService userService) {
+    public TodoService(TodoMapper todoMapper, AuditLogService auditLogService, TodoHistoryMapper todoHistoryMapper, UserService userService) {
         this.todoMapper = todoMapper;
+        this.auditLogService = auditLogService;
         this.todoHistoryMapper = todoHistoryMapper;
         this.userService = userService;
     }
 
+    @Transactional(readOnly = true)
     public Page<Todo> list(
         String keyword,
         String sortKey,
@@ -47,21 +51,8 @@ public class TodoService {
         return new PageImpl<>(rows, PageRequest.of(safePage, safeSize), total);
     }
 
-    public List<Todo> listAll(
-        String keyword,
-        String sortKey,
-        Long categoryId,
-        List<String> authors,
-        Boolean completed,
-        Long userId
-    ) {
-        String safeSort = normalizeSort(sortKey);
-        String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
-        List<String> safeAuthors = (authors == null || authors.isEmpty()) ? null : authors;
-        return todoMapper.searchAll(safeKeyword, safeSort, categoryId, safeAuthors, completed, userId);
-    }
-
     @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
+    @Transactional(readOnly = true)
     public Todo get(Long id) {
         Todo todo = todoMapper.findById(id);
         if (todo == null) {
@@ -70,6 +61,7 @@ public class TodoService {
         return todo;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Todo create(Todo todo) {
         if (todo.getCreatedAt() == null) {
             todo.setCreatedAt(LocalDateTime.now());
@@ -83,6 +75,7 @@ public class TodoService {
     }
 
     @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
+    @Transactional(rollbackFor = Exception.class)
     public Todo update(Long id, Todo input) {
         Todo existing = get(id);
         recordAdminEditHistory(existing);
@@ -92,14 +85,17 @@ public class TodoService {
         existing.setCategoryId(input.getCategoryId());
         existing.setDeadline(input.getDeadline());
         todoMapper.update(existing);
+        recordHistory(existing.getId(), "UPDATE");
         return existing;
     }
 
     @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         todoMapper.delete(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void deleteBatch(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return;
@@ -110,6 +106,7 @@ public class TodoService {
     }
 
     @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
+    @Transactional(rollbackFor = Exception.class)
     public void toggleCompleted(Long id) {
         Todo existing = get(id);
         boolean next = !existing.isCompleted();
@@ -132,14 +129,29 @@ public class TodoService {
         if (editorId == null || editorId.equals(existing.getUserId())) {
             return;
         }
+        auditLogService.logAdminEdit(existing.getId(), editorId);
+    }
+
+    private void recordHistory(Long todoId, String note) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication() == null
+            ? null
+            : SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!(principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails)) {
+            return;
+        }
+        Long editorId = userService.findUserId(userDetails.getUsername());
+        if (editorId == null) {
+            return;
+        }
         TodoHistory history = new TodoHistory();
-        history.setTodoId(existing.getId());
+        history.setTodoId(todoId);
         history.setEditorUserId(editorId);
         history.setEditedAt(LocalDateTime.now());
-        history.setNote("ADMIN edited other user's todo");
+        history.setNote(note);
         todoHistoryMapper.insert(history);
     }
 
+    @Transactional(readOnly = true)
     public String normalizeSort(String sortKey) {
         if (!StringUtils.hasText(sortKey)) {
             return "createdAtDesc";
@@ -157,6 +169,7 @@ public class TodoService {
         };
     }
 
+    @Transactional(readOnly = true)
     public int resolveSize(int size) {
         return switch (size) {
             case 10, 20, 30, 50, 100 -> size;
@@ -164,7 +177,23 @@ public class TodoService {
         };
     }
 
+    @Transactional(readOnly = true)
     public List<String> listAuthors(Long userId, boolean isAdmin) {
         return todoMapper.findAuthors(isAdmin ? null : userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Todo> listAll(
+        String keyword,
+        String sortKey,
+        Long categoryId,
+        List<String> authors,
+        Boolean completed,
+        Long userId
+    ) {
+        String safeSort = normalizeSort(sortKey);
+        String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
+        List<String> safeAuthors = (authors == null || authors.isEmpty()) ? null : authors;
+        return todoMapper.searchAll(safeKeyword, safeSort, categoryId, safeAuthors, completed, userId);
     }
 }

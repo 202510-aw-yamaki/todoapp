@@ -4,8 +4,14 @@ import com.example.todo.entity.Todo;
 import com.example.todo.repository.TodoHistoryMapper;
 import com.example.todo.repository.TodoMapper;
 import com.example.todo.entity.TodoHistory;
+import com.example.todo.view.DayView;
+import com.example.todo.view.TodoDateCount;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -195,5 +201,29 @@ public class TodoService {
         String safeKeyword = StringUtils.hasText(keyword) ? keyword : null;
         List<String> safeAuthors = (authors == null || authors.isEmpty()) ? null : authors;
         return todoMapper.searchAll(safeKeyword, safeSort, categoryId, safeAuthors, completed, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DayView> buildMonthDays(YearMonth month, Long userId) {
+        LocalDate start = month.atDay(1);
+        LocalDate end = month.atEndOfMonth();
+        List<TodoDateCount> counts = todoMapper.countByCreatedDateRange(
+            start.atStartOfDay(),
+            end.plusDays(1).atStartOfDay(),
+            userId
+        );
+        Map<LocalDate, Integer> countMap = counts.stream()
+            .collect(Collectors.toMap(TodoDateCount::getDate, TodoDateCount::getCount));
+        return start.datesUntil(end.plusDays(1))
+            .map(d -> new DayView(d, d.getDayOfMonth(), countMap.getOrDefault(d, 0)))
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Todo> listByCreatedDate(LocalDate date, Long userId) {
+        if (date == null) {
+            return List.of();
+        }
+        return todoMapper.findByCreatedDate(date, userId);
     }
 }

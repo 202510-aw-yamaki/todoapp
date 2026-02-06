@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title th:text="#{title.todo.list}">ToDo一覧</title>
+    <link rel="stylesheet" th:href="@{/css/calendar.css}" />
     <style>
         body { font-family: Arial, sans-serif; margin: 24px; padding-bottom: 96px; }
         table { border-collapse: collapse; width: 100%; }
@@ -54,6 +55,9 @@
 </div>
 
 <h1 th:text="#{title.todo.list}">ToDo一覧</h1>
+
+<div th:replace="calendar :: calendar"></div>
+<dialog id="layout-dialog"></dialog>
 
 <div class="topbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <form method="get" th:action="@{/todos}" class="actions">
@@ -231,6 +235,9 @@
         </div>
     </div>
 </div>
+
+<script src="/lib/anime.umd.min.js"></script>
+<script src="/js/calendar-modal.js"></script>
 
 <script>
     (function () {

@@ -1,0 +1,68 @@
+﻿【指示】
+- index.htmlに日セルクリックでモーダル拡大表示と当日TODO一覧を表示するカレンダーUIを実装
+- animejs v4 createLayout を使用し <dialog> をモーダルとして使う
+- ?lang= パラメータや既存構成は維持
+- /api/todos?date=YYYY-MM-DD で日付指定の取得
+- CDN禁止のため animejs UMD を static/lib に配置（手順をREADMEに記載）
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC + REST API
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- カレンダーがH1直下に表示される
+- 日セルクリックでモーダルが拡大表示され、当日TODO一覧が表示される
+- ESCまたは背景クリックで閉じ、フォーカスが元セルに戻る
+- animejs UMD を local に配置して動作する
+
+【非対象（今回はやらないこと）】
+- カレンダーの高度な月移動UI
+- 本番用の完全なデザイン調整
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/view/DayView.java
+  - src/main/java/com/example/todo/view/TodoDateCount.java
+  - src/main/resources/templates/calendar.html
+  - src/main/resources/static/css/calendar.css
+  - src/main/resources/static/js/calendar-modal.js
+  - src/main/resources/static/lib/anime.umd.min.js
+- 変更したファイル:
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/api/TodoApiController.java
+  - src/main/resources/templates/index.html
+  - src/main/resources/messages_ja.properties
+  - src/main/resources/messages_en.properties
+  - src/main/resources/messages_fr.properties
+  - src/main/resources/messages_es.properties
+  - src/main/resources/messages_ko.properties
+  - src/main/resources/messages_zh.properties
+  - README.md
+- 削除したファイル:
+  - なし
+
+【主要変更点】
+- 当月のカレンダー日付と件数を集計して表示
+- 日付クリックで<dialog>にクローンを差し込み、anime.createLayoutで拡大遷移
+- /api/todos に date パラメータを追加し、日別TODO取得を可能に
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- index表示でカレンダーがH1直下に表示されること
+- 日セルクリックでモーダルが中央に拡大表示されること
+- 当日のTODOがリスト表示されること
+- ESCまたは背景クリックで閉じ、元セルにフォーカス復帰すること
+
+【説明】
+- DayView と TodoDateCount で日別件数を計算し、カレンダーに反映
+- animejs UMD を /static/lib に配置してcreateLayoutを利用
+- CDN禁止のため README に配置手順を追記

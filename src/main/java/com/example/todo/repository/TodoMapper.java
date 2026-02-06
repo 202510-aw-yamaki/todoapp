@@ -1,6 +1,9 @@
 package com.example.todo.repository;
 
 import com.example.todo.entity.Todo;
+import com.example.todo.view.TodoDateCount;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -50,4 +53,15 @@ public interface TodoMapper {
     int updateCompleted(@Param("id") Long id, @Param("completed") boolean completed);
 
     int deleteBatch(@Param("ids") List<Long> ids);
+
+    List<TodoDateCount> countByCreatedDateRange(
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end,
+        @Param("userId") Long userId
+    );
+
+    List<Todo> findByCreatedDate(
+        @Param("date") LocalDate date,
+        @Param("userId") Long userId
+    );
 }

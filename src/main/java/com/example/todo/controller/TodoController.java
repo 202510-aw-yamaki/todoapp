@@ -17,6 +17,7 @@ import java.time.chrono.JapaneseDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.time.YearMonth;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -107,6 +108,9 @@ public class TodoController {
         model.addAttribute("end", todos.isEmpty() ? 0 : (todoPage.getNumber() * todoPage.getSize() + todos.size()));
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("nearLimit", LocalDate.now().plusDays(3));
+        YearMonth currentMonth = YearMonth.now();
+        model.addAttribute("calendarMonth", currentMonth);
+        model.addAttribute("days", todoService.buildMonthDays(currentMonth, isAdmin ? null : userId));
         return "index";
     }
 

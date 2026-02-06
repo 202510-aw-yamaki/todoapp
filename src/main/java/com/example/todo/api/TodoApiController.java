@@ -5,6 +5,7 @@ import com.example.todo.service.TodoService;
 import com.example.todo.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,6 +39,7 @@ public class TodoApiController {
         @RequestParam(name = "categoryId", required = false) Long categoryId,
         @RequestParam(name = "author", required = false) List<String> authors,
         @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "date", required = false) LocalDate date,
         @AuthenticationPrincipal UserDetails principal
     ) {
         if (principal == null) {
@@ -46,14 +48,19 @@ public class TodoApiController {
         boolean isAdmin = principal.getAuthorities().stream()
             .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         Long userId = userService.findUserId(principal.getUsername());
-        List<Todo> todos = todoService.listAll(
-            keyword,
-            sort,
-            categoryId,
-            authors,
-            resolveCompleted(status),
-            isAdmin ? null : userId
-        );
+        List<Todo> todos;
+        if (date != null) {
+            todos = todoService.listByCreatedDate(date, isAdmin ? null : userId);
+        } else {
+            todos = todoService.listAll(
+                keyword,
+                sort,
+                categoryId,
+                authors,
+                resolveCompleted(status),
+                isAdmin ? null : userId
+            );
+        }
         return ResponseEntity.ok(ApiResponse.ok("ok", todos));
     }
 

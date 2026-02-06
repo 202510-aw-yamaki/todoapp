@@ -5,12 +5,14 @@ import com.example.todo.repository.TodoHistoryMapper;
 import com.example.todo.repository.TodoMapper;
 import com.example.todo.entity.TodoHistory;
 import com.example.todo.view.DayView;
-import com.example.todo.view.TodoDateCount;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.MonthDay;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -207,23 +209,64 @@ public class TodoService {
     public List<DayView> buildMonthDays(YearMonth month, Long userId) {
         LocalDate start = month.atDay(1);
         LocalDate end = month.atEndOfMonth();
-        List<TodoDateCount> counts = todoMapper.countByCreatedDateRange(
-            start.atStartOfDay(),
-            end.plusDays(1).atStartOfDay(),
-            userId
-        );
-        Map<LocalDate, Integer> countMap = counts.stream()
-            .collect(Collectors.toMap(TodoDateCount::getDate, TodoDateCount::getCount));
+        List<Todo> deadlineTodos = todoMapper.findByDeadlineRange(start, end, userId);
+        Map<LocalDate, List<Todo>> byDate = deadlineTodos.stream()
+            .filter(t -> t.getDeadline() != null)
+            .collect(Collectors.groupingBy(Todo::getDeadline));
+        Map<LocalDate, Integer> countMap = byDate.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
         return start.datesUntil(end.plusDays(1))
-            .map(d -> new DayView(d, d.getDayOfMonth(), countMap.getOrDefault(d, 0)))
+            .map(d -> {
+                List<Todo> list = byDate.getOrDefault(d, List.of());
+                List<String> topTitles = list.stream()
+                    .limit(2)
+                    .map(t -> t.getTitle() == null ? "" : t.getTitle())
+                    .toList();
+                int otherCount = Math.max(0, list.size() - topTitles.size());
+                String rokuyo = calcRokuyo(d);
+                boolean holiday = isHoliday(d);
+                DayOfWeek dow = d.getDayOfWeek();
+                return new DayView(d, d.getDayOfMonth(), countMap.getOrDefault(d, 0), topTitles, otherCount, rokuyo, holiday, dow);
+            })
             .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<Todo> listByCreatedDate(LocalDate date, Long userId) {
+    public List<Todo> listByDeadlineDate(LocalDate date, Long userId) {
         if (date == null) {
             return List.of();
         }
-        return todoMapper.findByCreatedDate(date, userId);
+        return todoMapper.findByDeadlineDate(date, userId);
+    }
+
+    private boolean isHoliday(LocalDate date) {
+        if (date == null) {
+            return false;
+        }
+        // Simple fixed-date holiday list (not exhaustive)
+        Set<MonthDay> fixed = Set.of(
+            MonthDay.of(1, 1),
+            MonthDay.of(2, 11),
+            MonthDay.of(2, 23),
+            MonthDay.of(4, 29),
+            MonthDay.of(5, 3),
+            MonthDay.of(5, 4),
+            MonthDay.of(5, 5),
+            MonthDay.of(8, 11),
+            MonthDay.of(11, 3),
+            MonthDay.of(11, 23)
+        );
+        return fixed.contains(MonthDay.from(date));
+    }
+
+    private String calcRokuyo(LocalDate date) {
+        if (date == null) {
+            return "";
+        }
+        // Simple cycle (not accurate for real lunar calendar)
+        String[] cycle = {"先勝", "友引", "先負", "仏滅", "大安", "赤口"};
+        long offset = date.toEpochDay();
+        int idx = (int) Math.floorMod(offset, cycle.length);
+        return cycle[idx];
     }
 }

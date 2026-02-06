@@ -50,7 +50,7 @@ public class TodoApiController {
         Long userId = userService.findUserId(principal.getUsername());
         List<Todo> todos;
         if (date != null) {
-            todos = todoService.listByCreatedDate(date, isAdmin ? null : userId);
+            todos = todoService.listByDeadlineDate(date, isAdmin ? null : userId);
         } else {
             todos = todoService.listAll(
                 keyword,

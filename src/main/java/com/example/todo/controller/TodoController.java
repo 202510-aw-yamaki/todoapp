@@ -77,6 +77,7 @@ public class TodoController {
         @RequestParam(name = "categoryId", required = false) Long categoryId,
         @RequestParam(name = "author", required = false) List<String> authors,
         @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "calMonth", required = false) String calMonth,
         @RequestParam(name = "page", required = false, defaultValue = "0") int page,
         @RequestParam(name = "size", required = false, defaultValue = "10") int size,
         @AuthenticationPrincipal UserDetails principal,
@@ -108,8 +109,11 @@ public class TodoController {
         model.addAttribute("end", todos.isEmpty() ? 0 : (todoPage.getNumber() * todoPage.getSize() + todos.size()));
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("nearLimit", LocalDate.now().plusDays(3));
-        YearMonth currentMonth = YearMonth.now();
+        YearMonth currentMonth = resolveCalendarMonth(calMonth);
         model.addAttribute("calendarMonth", currentMonth);
+        model.addAttribute("calendarMonthLabel", formatReiwaMonth(currentMonth));
+        model.addAttribute("calendarPrev", currentMonth.minusMonths(1));
+        model.addAttribute("calendarNext", currentMonth.plusMonths(1));
         model.addAttribute("days", todoService.buildMonthDays(currentMonth, isAdmin ? null : userId));
         return "index";
     }
@@ -455,5 +459,22 @@ public class TodoController {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("Gy年MM月dd日", Locale.JAPAN);
         return formatter.format(JapaneseDate.from(deadline));
+    }
+
+    private YearMonth resolveCalendarMonth(String value) {
+        if (value == null || value.isBlank()) {
+            return YearMonth.now();
+        }
+        try {
+            return YearMonth.parse(value);
+        } catch (Exception ex) {
+            return YearMonth.now();
+        }
+    }
+
+    private String formatReiwaMonth(YearMonth month) {
+        LocalDate date = month.atDay(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("Gy年MM月", Locale.JAPAN);
+        return formatter.format(JapaneseDate.from(date));
     }
 }

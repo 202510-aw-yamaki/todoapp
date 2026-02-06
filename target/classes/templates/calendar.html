@@ -8,14 +8,43 @@
 <div th:fragment="calendar">
     <section class="calendar">
         <div class="calendar-header">
-            <h2 th:text="${calendarMonth} != null ? ${calendarMonth} : ''">2026-02</h2>
+            <div class="calendar-nav">
+                <a th:href="@{/todos(calMonth=${calendarPrev}, q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=${page}, size=${size})}"
+                   th:text="#{calendar.prev}">前月</a>
+                <span class="calendar-title" th:text="${calendarMonthLabel}">令和08年02月</span>
+                <a th:href="@{/todos(calMonth=${calendarNext}, q=${q}, sort=${sort}, categoryId=${categoryId}, author=${author}, status=${status}, page=${page}, size=${size})}"
+                   th:text="#{calendar.next}">翌月</a>
+            </div>
         </div>
+
+        <div class="calendar-weekdays">
+            <div class="weekday sun" th:text="#{weekday.sun}">日</div>
+            <div class="weekday" th:text="#{weekday.mon}">月</div>
+            <div class="weekday" th:text="#{weekday.tue}">火</div>
+            <div class="weekday" th:text="#{weekday.wed}">水</div>
+            <div class="weekday" th:text="#{weekday.thu}">木</div>
+            <div class="weekday" th:text="#{weekday.fri}">金</div>
+            <div class="weekday sat" th:text="#{weekday.sat}">土</div>
+        </div>
+
         <div class="calendar-grid">
             <div class="item day" th:each="d : ${days}"
+                 th:classappend="${d.dayOfWeek.name() == 'SUNDAY'} ? 'sun' : (${d.dayOfWeek.name() == 'SATURDAY'} ? 'sat' : '')"
+                 th:classappend="${d.holiday} ? 'holiday' : ''"
                  th:attr="data-date=${d.date}, data-duration='450'">
                 <button type="button" class="day-button">
-                    <span class="day-num" th:text="${d.dayOfMonth}">1</span>
-                    <span class="day-count" th:text="${d.todoCount}">0</span>
+                    <div class="day-header">
+                        <span class="day-num" th:text="${d.dayOfMonth}">1</span>
+                        <span class="day-rokuyo" th:text="${d.rokuyo}">大安</span>
+                    </div>
+                    <div class="todo-lines">
+                        <div class="todo-line" th:if="${d.topTitles.size() > 0}" th:text="${d.topTitles[0]}"></div>
+                        <div class="todo-line" th:if="${d.topTitles.size() > 1}" th:text="${d.topTitles[1]}"></div>
+                        <div class="todo-line empty" th:if="${d.topTitles.size() == 0}">&nbsp;</div>
+                        <div class="todo-line empty" th:if="${d.topTitles.size() <= 1}">&nbsp;</div>
+                        <div class="todo-line other" th:if="${d.otherCount > 0}" th:text="|#{calendar.other} ${d.otherCount}#{calendar.count}|">その他2件</div>
+                        <div class="todo-line empty" th:if="${d.otherCount == 0}">&nbsp;</div>
+                    </div>
                 </button>
                 <div class="day-detail"></div>
             </div>

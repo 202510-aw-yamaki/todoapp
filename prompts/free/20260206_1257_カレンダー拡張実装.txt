@@ -1,0 +1,70 @@
+﻿【指示】
+- カレンダーの前月/翌月切り替えボタンを追加
+- 月見出しを「令和yy年mm月」表記に変更
+- 曜日行を追加
+- 日曜/祝日を赤、土曜を青で表示
+- 日付右上＋六曜表示（簡易）
+- カレンダー内のTODO表示を2件+その他の3行表示に固定
+- カレンダー内のTODOは期限日ベースで表示
+- 日付クリックのモーダルは全幅表示、内容は登録者/タイトル/詳細/期限日
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC + REST API
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- 前月/翌月が切り替えできる
+- 見出しが令和yy年mm月で表示される
+- 日曜/祝日/土曜の色分けが反映される
+- 期限日ベースのTODOがカレンダーに表示される
+- モーダルが全幅で表示され、登録者/タイトル/詳細/期限日が出る
+
+【非対象（今回はやらないこと）】
+- 祝日・六曜の厳密な暦計算
+- 月移動のアニメーション強化
+
+【差分】
+- 作成したファイル:
+  - なし
+- 変更したファイル:
+  - src/main/resources/templates/calendar.html
+  - src/main/resources/static/css/calendar.css
+  - src/main/resources/static/js/calendar-modal.js
+  - src/main/java/com/example/todo/view/DayView.java
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/repository/TodoMapper.java
+  - src/main/resources/mapper/TodoMapper.xml
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/api/TodoApiController.java
+  - src/main/resources/templates/index.html
+  - src/main/resources/messages_ja.properties
+  - src/main/resources/messages_en.properties
+  - src/main/resources/messages_fr.properties
+  - src/main/resources/messages_es.properties
+  - src/main/resources/messages_ko.properties
+  - src/main/resources/messages_zh.properties
+- 削除したファイル:
+  - なし
+
+【主要変更点】
+- カレンダーを期限日ベースの表示に変更
+- 月切替リンクと曜日行を追加
+- モーダル表示を全幅化し表示内容を拡張
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- カレンダーがH1直下に表示される
+- 前月/翌月でカレンダー月が切り替わる
+- 期限日でTODOが表示される
+- 日セルクリックで全幅モーダルが開き内容が表示される
+- ESC/背景クリックで閉じ、元セルにフォーカス復帰
+
+【説明】
+- 期限日ベースで日別TODOを集計し、3行表示に調整
+- 簡易祝日/六曜は固定リストと簡易サイクルで実装

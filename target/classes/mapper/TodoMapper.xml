@@ -245,4 +245,48 @@
         ORDER BY t.created_at DESC
     </select>
 
+    <select id="findByDeadlineRange" resultMap="TodoResultMap">
+        SELECT t.id,
+               t.user_id,
+               t.author,
+               t.title,
+               t.detail,
+               t.created_at,
+               t.deadline,
+               t.completed,
+               t.category_id,
+               c.name AS category_name,
+               c.color AS category_color
+        FROM todo t
+        LEFT JOIN category c ON c.id = t.category_id
+        WHERE t.deadline IS NOT NULL
+          AND t.deadline >= #{start}
+          AND t.deadline &lt;= #{end}
+        <if test="userId != null">
+            AND t.user_id = #{userId}
+        </if>
+        ORDER BY t.deadline ASC, t.created_at DESC
+    </select>
+
+    <select id="findByDeadlineDate" resultMap="TodoResultMap">
+        SELECT t.id,
+               t.user_id,
+               t.author,
+               t.title,
+               t.detail,
+               t.created_at,
+               t.deadline,
+               t.completed,
+               t.category_id,
+               c.name AS category_name,
+               c.color AS category_color
+        FROM todo t
+        LEFT JOIN category c ON c.id = t.category_id
+        WHERE t.deadline = #{date}
+        <if test="userId != null">
+            AND t.user_id = #{userId}
+        </if>
+        ORDER BY t.created_at DESC
+    </select>
+
 </mapper>

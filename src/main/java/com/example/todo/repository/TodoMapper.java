@@ -64,4 +64,15 @@ public interface TodoMapper {
         @Param("date") LocalDate date,
         @Param("userId") Long userId
     );
+
+    List<Todo> findByDeadlineRange(
+        @Param("start") LocalDate start,
+        @Param("end") LocalDate end,
+        @Param("userId") Long userId
+    );
+
+    List<Todo> findByDeadlineDate(
+        @Param("date") LocalDate date,
+        @Param("userId") Long userId
+    );
 }

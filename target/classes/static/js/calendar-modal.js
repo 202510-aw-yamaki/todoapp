@@ -10,6 +10,16 @@
     console.warn('animejs UMD is not loaded. Place anime.umd.min.js under /static/lib/.');
   }
 
+  const i18n = {
+    loading: dialog.dataset.loading || 'Loading... ',
+    noTodos: dialog.dataset.noTodos || 'No todos.',
+    loadError: dialog.dataset.loadError || 'Failed to load.',
+    labelAuthor: dialog.dataset.labelAuthor || 'Author',
+    labelTitle: dialog.dataset.labelTitle || 'Title',
+    labelDetail: dialog.dataset.labelDetail || 'Detail',
+    labelDeadline: dialog.dataset.labelDeadline || 'Deadline'
+  };
+
   let activeCell = null;
   let activeButton = null;
 
@@ -39,6 +49,40 @@
     closeDialog();
   });
 
+  function renderTodos(detail, data) {
+    if (!data.length) {
+      detail.textContent = i18n.noTodos;
+      return;
+    }
+    detail.innerHTML = '';
+    data.forEach((t) => {
+      const item = document.createElement('div');
+      item.className = 'todo-item';
+
+      const author = document.createElement('div');
+      author.className = 'todo-field';
+      author.innerHTML = `<span class="todo-label">${i18n.labelAuthor}</span>${t.author || ''}`;
+
+      const title = document.createElement('div');
+      title.className = 'todo-field';
+      title.innerHTML = `<span class="todo-label">${i18n.labelTitle}</span>${t.title || ''}`;
+
+      const detailField = document.createElement('div');
+      detailField.className = 'todo-field';
+      detailField.innerHTML = `<span class="todo-label">${i18n.labelDetail}</span>${t.detail || ''}`;
+
+      const deadline = document.createElement('div');
+      deadline.className = 'todo-field';
+      deadline.innerHTML = `<span class="todo-label">${i18n.labelDeadline}</span>${t.deadlineLabel || ''}`;
+
+      item.appendChild(author);
+      item.appendChild(title);
+      item.appendChild(detailField);
+      item.appendChild(deadline);
+      detail.appendChild(item);
+    });
+  }
+
   calendar.addEventListener('click', async (e) => {
     const button = e.target.closest('.day-button');
     if (!button) return;
@@ -58,7 +102,7 @@
       clone.appendChild(detail);
     }
 
-    detail.innerHTML = '<div>Loading...</div>';
+    detail.innerHTML = `<div>${i18n.loading}</div>`;
 
     dialog.innerHTML = '';
     dialog.appendChild(clone);
@@ -84,25 +128,14 @@
     try {
       const res = await fetch(`/api/todos?date=${encodeURIComponent(date)}`);
       if (!res.ok) {
-        detail.textContent = 'Failed to load.';
+        detail.textContent = i18n.loadError;
         return;
       }
       const json = await res.json();
       const data = json && json.data ? json.data : [];
-      if (!data.length) {
-        detail.textContent = 'No todos.';
-        return;
-      }
-      const ul = document.createElement('ul');
-      data.forEach((t) => {
-        const li = document.createElement('li');
-        li.textContent = t.title || '';
-        ul.appendChild(li);
-      });
-      detail.innerHTML = '';
-      detail.appendChild(ul);
+      renderTodos(detail, data);
     } catch (err) {
-      detail.textContent = 'Failed to load.';
+      detail.textContent = i18n.loadError;
     }
   });
 })();

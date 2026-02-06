@@ -15,4 +15,3 @@
 【解決方法（修正方針）】
 - `templates/error.html` を新規作成し、`status` 判定で 404/500 を分岐表示する
 - 404 画像は `static/images/errors/艦これ猫.png` を `th:src` で参照
-- 404 を確認するURLは `/not-found` を使用する

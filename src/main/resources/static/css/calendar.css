@@ -41,3 +41,11 @@
 .day-detail .todo-item:last-child { border-bottom: none; }
 .day-detail .todo-field { margin-bottom: 4px; }
 .day-detail .todo-label { font-weight: bold; margin-right: 6px; }
+
+
+.close-hint { display: none; font-size: 0.75em; color: #fff; background: #1976d2; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+#layout-dialog .day-header { background: #1976d2; color: #fff; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+#layout-dialog .day-num { color: #fff; }
+#layout-dialog .day-rokuyo { color: #e3f2fd; }
+#layout-dialog .close-hint { display: inline-block; }
+

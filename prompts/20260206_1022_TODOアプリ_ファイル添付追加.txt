@@ -1,42 +1,42 @@
-�y�w���z
-- MultipartFile���g�p���ăt�@�C�����A�b�v���[�h
-- application.properties�Ńt�@�C���T�C�Y����i10MB�j��ݒ�
-- TodoAttachment�G���e�B�e�B�œY�t�t�@�C���̃��^�����Ǘ�
-- FileStorageService�Ńt�@�C���ۑ��iUUID�`���̃t�@�C�����ɕϊ��j
-- �t�@�C�����̃T�j�^�C�Y�i�p�X�g���o�[�T���΍�j
-- �_�E�����[�h�@�\�iContent-Disposition�w�b�_�[�Ńt�@�C�������w��j
-- �Y�t�t�@�C���̍폜�@�\
-- ���g���q/MIME�̐����ƊȈՃE�C���X�`�F�b�N��ǉ�
+﻿【指示】
+- MultipartFileを使用してファイルをアップロード
+- application.propertiesでファイルサイズ上限（10MB）を設定
+- TodoAttachmentエンティティで添付ファイルのメタ情報を管理
+- FileStorageServiceでファイル保存（UUID形式のファイル名に変換）
+- ファイル名のサニタイズ（パストラバーサル対策）
+- ダウンロード機能（Content-Dispositionヘッダーでファイル名を指定）
+- 添付ファイルの削除機能
+- 許可拡張子/MIMEの制限と簡易ウイルスチェックを追加
 
-�y�O��z
-- Java�F17
-- Spring Boot�F3.x
-- Maven�F�g�p
-- �p�b�P�[�W���Fcom.example.todo
-- ���(MVC)/API�FMVC
-- DB�FH2
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC
+- DB：H2
 
-�y�󂯓�������i���������j�z
-- 10MB����Ńt�@�C�����A�b�v���[�h�ł���
-- �Y�t�t�@�C����DB�ɕۑ�����AUUID�`���Ńt�@�C����ۑ��ł���
-- �s���ȃt�@�C������p�X�g���o�[�T�������ۂ����
-- ���g���q/MIME�ȊO�͋��ۂ����
-- �_�E�����[�h���Ɍ��t�@�C�����Ŏ擾�ł���
-- �Y�t�t�@�C�����폜�ł���
+【受け入れ条件（完了条件）】
+- 10MB上限でファイルをアップロードできる
+- 添付ファイルがDBに保存され、UUID形式でファイルを保存できる
+- 不正なファイル名やパストラバーサルが拒否される
+- 許可拡張子/MIME以外は拒否される
+- ダウンロード時に元ファイル名で取得できる
+- 添付ファイルを削除できる
 
-�y��Ώہi����͂��Ȃ����Ɓj�z
-- �Y�t�t�@�C���̃o�[�W�����Ǘ�
-- �N���E�h�X�g���[�W�A�g
+【非対象（今回はやらないこと）】
+- 添付ファイルのバージョン管理
+- クラウドストレージ連携
 
-�y�����z
-- �쐬�����t�@�C��:
+【差分】
+- 作成したファイル:
   - src/main/java/com/example/todo/entity/TodoAttachment.java
   - src/main/java/com/example/todo/repository/TodoAttachmentMapper.java
   - src/main/java/com/example/todo/service/FileStorageService.java
   - src/main/java/com/example/todo/service/TodoAttachmentService.java
   - src/main/java/com/example/todo/exception/AttachmentNotFoundException.java
   - src/main/resources/mapper/TodoAttachmentMapper.xml
-- �ύX�����t�@�C��:
+- 変更したファイル:
   - src/main/resources/application.properties
   - src/main/resources/schema.sql
   - src/main/java/com/example/todo/service/TodoSecurityService.java
@@ -45,24 +45,43 @@
   - src/main/java/com/example/todo/api/ApiExceptionHandler.java
   - src/main/resources/templates/create.html
   - src/main/resources/templates/complete.html
-- �폜�����t�@�C��:
-  - �Ȃ�
+- 削除したファイル:
+  - なし
 
-�y��v�ύX�_�z
-- �Y�t�t�@�C���̃��^���Ǘ��ƕۑ��@�\��ǉ�
-- ���g���q/MIME�̐����AEICAR������ɂ��ȈՃE�C���X�`�F�b�N��ǉ�
-- �ҏW��ʂœY�t�̃A�b�v���[�h/�폜/�_�E�����[�h���\��
+【主要変更点】
+- 添付ファイルのメタ情報管理と保存機能を追加
+- 許可拡張子/MIMEの制限、EICAR文字列による簡易ウイルスチェックを追加
+- 編集画面で添付のアップロード/削除/ダウンロードを可能に
 
-�y���s�R�}���h�z
+【実行コマンド】
 - mvn spring-boot:run
 
-�y�m�F�菇�z
-- �ҏW��ʂŃt�@�C�����A�b�v���[�h���A�ꗗ�ɕ\������邱�Ƃ��m�F
-- �_�E�����[�h���Ɍ��̃t�@�C�����Ŏ擾�ł��邱�Ƃ��m�F
-- ������Ă��Ȃ��g���q/MIME�̃t�@�C�������ۂ���邱�Ƃ��m�F
-- �Y�t�t�@�C���폜�����f����邱�Ƃ��m�F
+【確認手順】
+- 編集画面でファイルをアップロードし、一覧に表示されることを確認
+- ダウンロード時に元のファイル名で取得できることを確認
+- 許可されていない拡張子/MIMEのファイルが拒否されることを確認
+- 添付ファイル削除が反映されることを確認
 
-�y�����z
-- TodoAttachment�Ń��^����ێ����AUUID���ŕۑ����Ď��t�@�C���Ƙ_�����𕪗�
-- FileStorageService�ŃT�j�^�C�Y�Ƌ��`���`�F�b�N�����{
-- �ȈՃE�C���X�`�F�b�N��EICAR�����񌟏o�ɂ��Œ���̑΍�
+【説明】
+- TodoAttachmentでメタ情報を保持し、UUID名で保存して実ファイルと論理名を分離
+- FileStorageServiceでサニタイズと許可形式チェックを実施
+- 簡易ウイルスチェックはEICAR文字列検出による最低限の対策
+
+【その後の修正】
+・問題点
+- 確認画面（confirm.html）に添付ファイルの表示がなく、完了画面と差分があった
+
+・修正指示
+- 確認画面に添付ファイル名とサイズを表示する
+
+【差分】
+- 作成したファイル:
+  - なし
+- 変更したファイル:
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/resources/templates/confirm.html
+- 削除したファイル:
+  - なし
+
+【確認結果】
+- 確認画面に添付ファイル名とサイズが表示されるように修正

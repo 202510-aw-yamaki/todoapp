@@ -138,6 +138,9 @@ public class TodoController {
         Category category = categoryService.get(todoForm.getCategoryId());
         model.addAttribute("category", category);
         model.addAttribute("deadlineLabel", formatDeadline(todoForm.getDeadline()));
+        if ("edit".equals(mode)) {
+            model.addAttribute("attachments", attachmentService.listByTodoId(todoForm.getId()));
+        }
         return "confirm";
     }
 

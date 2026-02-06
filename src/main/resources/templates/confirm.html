@@ -10,6 +10,8 @@
         th { background: #f5f5f5; width: 160px; text-align: left; }
         .actions { margin-top: 12px; display: flex; gap: 12px; }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; color: #fff; }
+        .attachments { margin-top: 24px; }
+        .attachments table { margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -43,6 +45,25 @@
         </td>
     </tr>
 </table>
+
+<div class="attachments">
+    <h2>添付ファイル</h2>
+    <table th:if="${attachments != null && !attachments.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ファイル名</th>
+            <th>サイズ</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${attachments}">
+            <td th:text="${a.originalName}"></td>
+            <td th:text="${#numbers.formatInteger(a.size, 0, 'COMMA')} + ' bytes'"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${attachments == null || attachments.isEmpty()}">添付ファイルはありません。</div>
+</div>
 
 <div class="actions">
     <form th:action="@{/todos/complete}" method="post">

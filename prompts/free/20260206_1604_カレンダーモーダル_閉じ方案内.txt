@@ -1,29 +1,30 @@
-‚ ‚È‚½‚ÍSpring Boot + Thymeleaf‚ÌToDoƒAƒvƒŠ‚ð‰üC‚·‚éŠJ”­ŽÒ‚Å‚·B
-ƒJƒŒƒ“ƒ_[ƒ‚[ƒ_ƒ‹i“ú•tÚ×j‚ðŠJ‚¢‚½‚Æ‚«A•Â‚¶•û‚ª•ª‚©‚è‚É‚­‚¢–â‘è‚ð‰ðÁ‚µ‚Ä‚­‚¾‚³‚¢B
+ï»¿ã‚ãªãŸã¯Spring Boot + Thymeleafã®ToDoã‚¢ãƒ—ãƒªã‚’æ”¹ä¿®ã™ã‚‹é–‹ç™ºè€…ã§ã™ã€‚
+ã‚«ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ¢ãƒ¼ãƒ€ãƒ«ï¼ˆæ—¥ä»˜è©³ç´°ï¼‰ã‚’é–‹ã„ãŸã¨ãã€é–‰ã˜æ–¹ãŒåˆ†ã‹ã‚Šã«ãã„å•é¡Œã‚’è§£æ¶ˆã—ã¦ãã ã•ã„ã€‚
 
-# —vŒ
-- ƒ‚[ƒ_ƒ‹“à‚Ì `.day-header` ‚É”wŒiF‚ð•t‚¯‚ÄŽ‹Šo“I‚Éu•Â‚¶‚é‘€ì‚Ì“üŒûv‚¾‚Æ•ª‚©‚é‚æ‚¤‚É‚·‚é
-- `.day-header` ‚Éu‚±‚±‚ðƒNƒŠƒbƒN‚·‚ê‚Î•Â‚¶‚Ü‚·v‚Ì•¶Œ¾‚ð•\Ž¦‚·‚é
-- `.day-header` ‚ðƒNƒŠƒbƒN‚µ‚½‚Æ‚«‚Éƒ‚[ƒ_ƒ‹‚ª•Â‚¶‚é‚æ‚¤‚É‚·‚é
-- Šù‘¶‚ÌESCƒL[/ƒoƒbƒNƒhƒƒbƒvƒNƒŠƒbƒN‚Å•Â‚¶‚é‹@”\‚ÍˆÛŽ
-- ƒ‚[ƒ_ƒ‹“à•”‚Ì‘¼—v‘fƒNƒŠƒbƒN‚Å‚Í•Â‚¶‚È‚¢iŒë‘€ì–hŽ~j
+# è¦ä»¶
+- ãƒ¢ãƒ¼ãƒ€ãƒ«å†…ã® `.day-header` ã«èƒŒæ™¯è‰²ã‚’ä»˜ã‘ã¦è¦–è¦šçš„ã«ã€Œé–‰ã˜ã‚‹æ“ä½œã®å…¥å£ã€ã ã¨åˆ†ã‹ã‚‹ã‚ˆã†ã«ã™ã‚‹
+- `.day-header` ã«ã€Œã“ã“ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚Œã°é–‰ã˜ã¾ã™ã€ã®æ–‡è¨€ã‚’è¡¨ç¤ºã™ã‚‹
+- `.day-header` ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸã¨ãã«ãƒ¢ãƒ¼ãƒ€ãƒ«ãŒé–‰ã˜ã‚‹ã‚ˆã†ã«ã™ã‚‹
+- æ—¢å­˜ã®ESCã‚­ãƒ¼/ãƒãƒƒã‚¯ãƒ‰ãƒ­ãƒƒãƒ—ã‚¯ãƒªãƒƒã‚¯ã§é–‰ã˜ã‚‹æ©Ÿèƒ½ã¯ç¶­æŒ
+- ãƒ¢ãƒ¼ãƒ€ãƒ«å†…éƒ¨ã®ä»–è¦ç´ ã‚¯ãƒªãƒƒã‚¯ã§ã¯é–‰ã˜ãªã„ï¼ˆèª¤æ“ä½œé˜²æ­¢ï¼‰
 
-# •ÏX‘ÎÛi—áj
-- templates/calendar.htmliday-header‚Ì•\Ž¦‚Æ•¶Œ¾j
-- static/css/calendar.cssiday-header‚Ì”wŒiFEƒeƒLƒXƒgƒXƒ^ƒCƒ‹j
-- static/js/calendar-modal.jsiday-headerƒNƒŠƒbƒN‚Å•Â‚¶‚éˆ—j
+# å¤‰æ›´å¯¾è±¡ï¼ˆä¾‹ï¼‰
+- templates/calendar.htmlï¼ˆday-headerã®è¡¨ç¤ºã¨æ–‡è¨€ï¼‰
+- static/css/calendar.cssï¼ˆday-headerã®èƒŒæ™¯è‰²ãƒ»ãƒ†ã‚­ã‚¹ãƒˆã‚¹ã‚¿ã‚¤ãƒ«ï¼‰
+- static/js/calendar-modal.jsï¼ˆday-headerã‚¯ãƒªãƒƒã‚¯ã§é–‰ã˜ã‚‹å‡¦ç†ï¼‰
 
-# ŽÀ‘•ŽwŽ¦
-1) `day-header` ‚ÉˆÄ“à•¶‚ð’Ç‰Ái—áF`<span class="close-hint">‚±‚±‚ðƒNƒŠƒbƒN‚·‚ê‚Î•Â‚¶‚Ü‚·</span>`j
-2) `calendar.css` ‚É `.day-header` ‚Ì”wŒiF‚ÆŽ‹”F«‚Ì‚‚¢ƒXƒ^ƒCƒ‹‚ð’Ç‰Á
-3) `calendar-modal.js` ‚Åƒ‚[ƒ_ƒ‹¶¬ŒãA`.day-header` ‚É `click` ƒŠƒXƒi[‚ð•t—^‚µ‚Ä close ˆ—‚ðŽÀs
-   - closeŽž‚ÍŠù‘¶‚Ìuis-openv‰ðœ‚Æ focus•œ‹A‚ÌƒƒWƒbƒN‚É“‡
+# å®Ÿè£…æŒ‡ç¤º
+1) `day-header` ã«æ¡ˆå†…æ–‡ã‚’è¿½åŠ ï¼ˆä¾‹ï¼š`<span class="close-hint">ã“ã“ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚Œã°é–‰ã˜ã¾ã™</span>`ï¼‰
+2) `calendar.css` ã« `.day-header` ã®èƒŒæ™¯è‰²ã¨è¦–èªæ€§ã®é«˜ã„ã‚¹ã‚¿ã‚¤ãƒ«ã‚’è¿½åŠ 
+3) `calendar-modal.js` ã§ãƒ¢ãƒ¼ãƒ€ãƒ«ç”Ÿæˆå¾Œã€`.day-header` ã« `click` ãƒªã‚¹ãƒŠãƒ¼ã‚’ä»˜ä¸Žã—ã¦ close å‡¦ç†ã‚’å®Ÿè¡Œ
+   - closeæ™‚ã¯æ—¢å­˜ã®ã€Œis-openã€è§£é™¤ã¨ focuså¾©å¸°ã®ãƒ­ã‚¸ãƒƒã‚¯ã«çµ±åˆ
 
-# Žó‚¯“ü‚êðŒ
-- ƒ‚[ƒ_ƒ‹‚ðŠJ‚­‚Æ `.day-header` ‚ÉˆÄ“à•¶‚ª•\Ž¦‚³‚êAF•t‚«‚Å–Ú—§‚Â
-- `.day-header` ‚ðƒNƒŠƒbƒN‚·‚é‚Æƒ‚[ƒ_ƒ‹‚ª•Â‚¶‚é
-- ESC ‚ÆƒoƒbƒNƒhƒƒbƒvƒNƒŠƒbƒN‚Å•Â‚¶‚éŠù‘¶“®ì‚Í•Ï‚í‚ç‚È‚¢
+# å—ã‘å…¥ã‚Œæ¡ä»¶
+- ãƒ¢ãƒ¼ãƒ€ãƒ«ã‚’é–‹ãã¨ `.day-header` ã«æ¡ˆå†…æ–‡ãŒè¡¨ç¤ºã•ã‚Œã€è‰²ä»˜ãã§ç›®ç«‹ã¤
+- `.day-header` ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨ãƒ¢ãƒ¼ãƒ€ãƒ«ãŒé–‰ã˜ã‚‹
+- ESC ã¨ãƒãƒƒã‚¯ãƒ‰ãƒ­ãƒƒãƒ—ã‚¯ãƒªãƒƒã‚¯ã§é–‰ã˜ã‚‹æ—¢å­˜å‹•ä½œã¯å¤‰ã‚ã‚‰ãªã„
 
-# o—Í
-- •ÏX“_‚Ì·•ªi‚Ç‚Ìƒtƒ@ƒCƒ‹‚Ì‚Ç‚±‚É‰½‚ð’Ç‰Á‚µ‚½‚©j
-- “®ìŠm”FŽè‡
+# å‡ºåŠ›
+- å¤‰æ›´ç‚¹ã®å·®åˆ†ï¼ˆã©ã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ã©ã“ã«ä½•ã‚’è¿½åŠ ã—ãŸã‹ï¼‰
+- å‹•ä½œç¢ºèªæ‰‹é †
+

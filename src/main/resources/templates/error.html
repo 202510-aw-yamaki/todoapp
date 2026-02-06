@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${status == 404} ? #{error.404.title} : #{error.500.title}">Error</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        .card { max-width: 560px; padding: 16px; border: 1px solid #ccc; border-radius: 8px; }
+        .lang { margin-bottom: 12px; }
+        .lang a { margin-right: 8px; }
+    </style>
+</head>
+<body>
+<div class="lang">
+    <a th:href="@{|?lang=ja|}">日本語</a>
+    <a th:href="@{|?lang=en|}">English</a>
+    <a th:href="@{|?lang=fr|}">Français</a>
+    <a th:href="@{|?lang=es|}">Español</a>
+    <a th:href="@{|?lang=ko|}">한국어</a>
+    <a th:href="@{|?lang=zh|}">中文</a>
+</div>
+<div class="card">
+    <h1 th:text="${status == 404} ? #{error.404.title} : #{error.500.title}">Error</h1>
+    <p th:text="${status == 404} ? #{error.404.message} : #{error.500.message}">Error</p>
+    <img th:if="${status == 404}" th:src="@{/images/errors/艦これ猫.png}" alt="404" style="max-width: 100%; height: auto; margin: 12px 0;" />
+    <p th:if="${message}" th:text="${message}"></p>
+    <a th:href="@{/todos}" th:text="#{link.toList}">一覧へ</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+【問題】
+- http://localhost:8080//not-found にアクセスすると 400 Bad Request になる
+- /not-found など存在しないURLにアクセスすると 404/500 ページではなく TemplateInputException（error テンプレート未解決）で 500 になる
+
+【原因】
+- `//not-found` は無効なパスとしてサーバが 400 を返す（404 ではない）
+- Spring Boot はエラー時に `templates/error.html` を優先的に探すが、現在未配置のため `error` テンプレート解決に失敗して 500 になる
+
+【対処方法】
+- 404 を確認する場合は二重スラッシュを避け、`/not-found` のように 1 本スラッシュでアクセスする
+- `src/main/resources/templates/error.html` を追加して、404/500 の共通エラーページを用意する
+  - `status` により表示を切り替える（404なら404内容、その他は500内容）
+  - `th:href="@{/todos}"` などで戻りリンクを出す
+
+【解決方法（修正方針）】
+- `templates/error.html` を新規作成し、`status` 判定で 404/500 を分岐表示する
+- 404 画像は `static/images/errors/艦これ猫.png` を `th:src` で参照
+- 404 を確認するURLは `/not-found` を使用する

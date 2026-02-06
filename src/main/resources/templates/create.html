@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title th:text="${mode == 'edit'} ? 'ToDo編集' : 'ToDo登録'">ToDo登録</title>
+    <title th:text="${mode == 'edit'} ? #{title.todo.edit} : #{title.todo.create}">ToDo</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 24px; }
         table { border-collapse: collapse; width: 100%; max-width: 720px; }
@@ -13,46 +13,57 @@
         .message { color: #2e7d32; font-size: 0.9em; margin: 8px 0; }
         .attachments { margin-top: 24px; }
         .attachments table { margin-top: 8px; }
+        .lang { margin-bottom: 12px; }
+        .lang a { margin-right: 8px; }
     </style>
 </head>
 <body>
-<h1 th:text="${mode == 'edit'} ? 'ToDo編集' : 'ToDo登録'"></h1>
+<div class="lang">
+    <a th:href="@{|?lang=ja|}">日本語</a>
+    <a th:href="@{|?lang=en|}">English</a>
+    <a th:href="@{|?lang=fr|}">Français</a>
+    <a th:href="@{|?lang=es|}">Español</a>
+    <a th:href="@{|?lang=ko|}">한국어</a>
+    <a th:href="@{|?lang=zh|}">中文</a>
+</div>
+
+<h1 th:text="${mode == 'edit'} ? #{title.todo.edit} : #{title.todo.create}">ToDo</h1>
 
 <form th:action="@{/todos/confirm}" th:object="${todoForm}" method="post">
     <input type="hidden" th:field="*{id}" />
     <table>
         <tr>
-            <th>登録者（必須）</th>
+            <th th:text="#{label.author.required}">登録者（必須）</th>
             <td>
                 <input type="text" th:field="*{author}" />
                 <div class="error" th:errors="*{author}"></div>
             </td>
         </tr>
         <tr>
-            <th>タイトル（必須）</th>
+            <th th:text="#{label.title.required}">タイトル（必須）</th>
             <td>
                 <input type="text" th:field="*{title}" />
                 <div class="error" th:errors="*{title}"></div>
             </td>
         </tr>
         <tr>
-            <th>詳細（任意）</th>
+            <th th:text="#{label.detail.optional}">詳細（任意）</th>
             <td>
                 <textarea th:field="*{detail}" rows="4" cols="40"></textarea>
                 <div class="error" th:errors="*{detail}"></div>
             </td>
         </tr>
         <tr>
-            <th>期限日（任意）</th>
+            <th th:text="#{label.deadline.optional}">期限日（任意）</th>
             <td>
                 <input type="date" th:field="*{deadline}" />
             </td>
         </tr>
         <tr>
-            <th>カテゴリ（必須）</th>
+            <th th:text="#{label.category.required}">カテゴリ（必須）</th>
             <td>
                 <select th:field="*{categoryId}">
-                    <option value="">選択してください</option>
+                    <option value="" th:text="#{label.category.select}">選択してください</option>
                     <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
                 </select>
                 <div class="error" th:errors="*{categoryId}"></div>
@@ -61,27 +72,27 @@
     </table>
 
     <div class="actions">
-        <button type="submit">確認</button>
-        <a th:href="@{/todos}">戻る</a>
+        <button type="submit" th:text="#{button.confirm}">確認</button>
+        <a th:href="@{/todos}" th:text="#{button.back}">戻る</a>
     </div>
 </form>
 
 <div class="attachments" th:if="${mode == 'edit'}">
-    <h2>添付ファイル</h2>
+    <h2 th:text="#{label.attachments}">添付ファイル</h2>
     <div class="message" th:if="${attachmentMessage}" th:text="${attachmentMessage}"></div>
     <div class="error" th:if="${attachmentError}" th:text="${attachmentError}"></div>
     <form th:action="@{|/todos/${todoForm.id}/attachments|}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <input type="file" name="file" />
-        <button type="submit">アップロード</button>
+        <button type="submit" th:text="#{button.upload}">アップロード</button>
     </form>
 
     <table th:if="${attachments != null && !attachments.isEmpty()}">
         <thead>
         <tr>
-            <th>ファイル名</th>
-            <th>サイズ</th>
-            <th>操作</th>
+            <th th:text="#{label.filename}">ファイル名</th>
+            <th th:text="#{label.size}">サイズ</th>
+            <th th:text="#{label.actions}">操作</th>
         </tr>
         </thead>
         <tbody>
@@ -93,13 +104,13 @@
             <td>
                 <form th:action="@{/todos/attachments/{id}/delete(id=${a.id})}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <button type="submit">削除</button>
+                    <button type="submit" th:text="#{button.delete}">削除</button>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
-    <div class="error" th:if="${attachments == null || attachments.isEmpty()}">添付ファイルはありません。</div>
+    <div class="error" th:if="${attachments == null || attachments.isEmpty()}" th:text="#{msg.noAttachments}">添付ファイルはありません。</div>
 </div>
 </body>
 </html>

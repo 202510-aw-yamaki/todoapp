@@ -1,8 +1,7 @@
-package com.example.todo.exception;
+﻿package com.example.todo.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,8 +22,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ModelAndView handleException(Exception ex) {
         logger.error("Unexpected error", ex);
-        ModelAndView mv = new ModelAndView("error/500");
-        mv.addObject("message", "予期しないエラーが発生しました。");
-        return mv;
+        return new ModelAndView("error/500");
     }
 }

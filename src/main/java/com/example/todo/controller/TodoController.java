@@ -35,6 +35,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 @Controller
 public class TodoController {
@@ -44,19 +46,22 @@ public class TodoController {
     private final UserService userService;
     private final TodoAttachmentService attachmentService;
     private final FileStorageService fileStorageService;
+    private final MessageSource messageSource;
 
     public TodoController(
         TodoService todoService,
         CategoryService categoryService,
         UserService userService,
         TodoAttachmentService attachmentService,
-        FileStorageService fileStorageService
+        FileStorageService fileStorageService,
+        MessageSource messageSource
     ) {
         this.todoService = todoService;
         this.categoryService = categoryService;
         this.userService = userService;
         this.attachmentService = attachmentService;
         this.fileStorageService = fileStorageService;
+        this.messageSource = messageSource;
     }
 
     @GetMapping("/")
@@ -331,7 +336,10 @@ public class TodoController {
     ) {
         try {
             attachmentService.add(id, file);
-            redirectAttributes.addFlashAttribute("attachmentMessage", "ファイルをアップロードしました。");
+            redirectAttributes.addFlashAttribute(
+                "attachmentMessage",
+                messageSource.getMessage("msg.attachment.uploaded", null, LocaleContextHolder.getLocale())
+            );
         } catch (IllegalArgumentException | IOException ex) {
             redirectAttributes.addFlashAttribute("attachmentError", ex.getMessage());
         }
@@ -364,9 +372,15 @@ public class TodoController {
         Long todoId = attachmentService.get(attachmentId).getTodoId();
         try {
             attachmentService.delete(attachmentId);
-            redirectAttributes.addFlashAttribute("attachmentMessage", "添付ファイルを削除しました。");
+            redirectAttributes.addFlashAttribute(
+                "attachmentMessage",
+                messageSource.getMessage("msg.attachment.deleted", null, LocaleContextHolder.getLocale())
+            );
         } catch (IOException ex) {
-            redirectAttributes.addFlashAttribute("attachmentError", "削除に失敗しました。");
+            redirectAttributes.addFlashAttribute(
+                "attachmentError",
+                messageSource.getMessage("msg.attachment.deleteError", null, LocaleContextHolder.getLocale())
+            );
         }
         return "redirect:/todos/" + todoId + "/edit";
     }

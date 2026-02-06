@@ -1,0 +1,14 @@
+﻿問題:
+- /not-found など存在しないURLにアクセスしても 404 画面に遷移せず、500 になる。
+
+原因:
+- 未存在パスは Static Resource 扱いとなり NoResourceFoundException が発生。
+- GlobalExceptionHandler が例外を 500 として扱っているため、404 にならない。
+
+対処方法:
+- GlobalExceptionHandler で NoResourceFoundException を 404 扱いにする。
+  例: @ExceptionHandler(NoResourceFoundException.class) を追加し、error/404 を返す。
+
+解決方法:
+- 上記ハンドリングを追加後、ログイン済みで /not-found にアクセスし
+  404 画面が表示されることを確認する。

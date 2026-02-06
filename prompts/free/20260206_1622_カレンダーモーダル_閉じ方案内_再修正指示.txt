@@ -1,0 +1,42 @@
+あなたはSpring Boot + Thymeleaf のToDoアプリを改修する開発者です。
+カレンダーモーダルの「閉じる案内」が表示されず、ヘッダークリックで閉じない問題を修正してください。
+
+# 現状確認
+- templates/calendar.html の `.day-header` に「ここをクリックすれば閉じます」の文言が存在しない
+- static/js/calendar-modal.js に `.day-header` の click リスナーが存在しない
+- static/css/calendar.css には `.close-hint` とモーダル用 `.day-header` スタイルが存在する
+
+# 原因
+- calendar.html と calendar-modal.js への変更が未反映または上書きされている
+
+# 修正指示
+1) `templates/calendar.html` の `.day-header` に案内文を追加
+   - 例: `<span class="close-hint">ここをクリックすれば閉じます</span>`
+
+2) `static/js/calendar-modal.js` でモーダル生成後に `.day-header` を閉じるリスナーで結線
+   - `dialog.appendChild(clone)` の直後に追加する
+
+```js
+const closeTarget = clone.querySelector('.day-header');
+if (closeTarget) {
+  closeTarget.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    closeDialog();
+  });
+}
+```
+
+3) クリックが拾えない場合の保険（CSS）
+   - 既に以下が入っているか確認
+   - ない場合は `static/css/calendar.css` に追加
+
+```css
+#layout-dialog .day-button { pointer-events: none; }
+#layout-dialog .day-header { pointer-events: auto; }
+```
+
+# 受け入れ条件
+- モーダル上部に「ここをクリックすれば閉じます」が表示される
+- `.day-header` クリックでモーダルが閉じる
+- ESC / 背景クリックで閉じる挙動は維持される

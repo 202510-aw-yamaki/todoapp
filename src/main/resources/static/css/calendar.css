@@ -49,3 +49,7 @@
 #layout-dialog .day-rokuyo { color: #e3f2fd; }
 #layout-dialog .close-hint { display: inline-block; }
 
+
+#layout-dialog .day-button { pointer-events: none; }
+#layout-dialog .day-header { pointer-events: auto; }
+

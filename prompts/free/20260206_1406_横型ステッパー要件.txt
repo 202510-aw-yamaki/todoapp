@@ -1,0 +1,37 @@
+﻿あなたはSpring Boot(Java17)+Thymeleafの既存画面に、添付画像のような「横型ステッパー」を実装してください（JS不要、サーバサイド描画のみ）。
+
+要件
+- 4ステップ（例：一覧ページ/作成ページ/確認ページ/完了ページ）。
+- 現在ステップ：青い丸（中に番号）＋ラベルも青。
+- 完了ステップ：緑の丸（チェック）＋ラベル緑。完了した区間の横棒も緑で伸びる。
+- 未到達：灰色の丸（番号）＋ラベル灰。未完了区間の横棒は薄い灰。
+- レイアウト：横並びで等間隔。各ステップ間に横棒がつながる（画像の見た目に寄せる）。
+- 既存のカード構造（.card/.card-body 等）はそのまま使ってOK。
+
+実装指示（最小変更）
+1) Thymeleafフラグメントを作成：
+   - templates/fragments/stepper.html
+   - th:fragment="stepper(stepLabels, currentStep)"
+   - stepLabelsはList<String>、currentStepは1..Nのint
+   - th:eachでステップを描画し、状態クラスを付与：completed / active / pending
+     completed = idx < currentStep, active = idx == currentStep, pending = idx > currentStep
+
+2) CSSを追加：
+   - static/css/stepper.css（Flexboxで横並び）
+   - 丸(.stepper-circle)と横棒（各itemの::after等）をCSSで描画
+   - 横棒の色は「そのステップがcompletedなら緑、そうでなければ灰」（＝完了区間だけ緑になる）
+   - 目安：丸32px、中央寄せ、チェックはアイコン or “✓” でも可（外部CDN追加は避け、既存アイコンが無ければSVG/文字で）
+
+3) 既存レイアウト（共通ヘッダ等）にstepper.cssを読み込む。
+
+4) 使い方例も提示：
+   - 各Controllerで model.addAttribute("stepLabels", List.of(...));
+                     model.addAttribute("currentStep", 3);
+   - 画面側で th:replace="fragments/stepper :: stepper(${stepLabels}, ${currentStep})"
+
+受入条件
+- 画像同様に「青い現在丸」「緑チェック済み」「緑の進捗バー」「残りは灰」で見える。
+- ステップ数が変わっても（N件）崩れにくい。
+- a11y：activeに aria-current="step" を付与、ステッパー全体はrole="list"等を付ける。
+
+上記を満たす具体的なHTML(Thymeleaf)＋CSSを、必要ファイルの差分（新規作成/追記箇所）として提示してください。

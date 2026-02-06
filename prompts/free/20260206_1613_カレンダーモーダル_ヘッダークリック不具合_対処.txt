@@ -1,0 +1,52 @@
+﻿あなたはSpring Boot + Thymeleaf のToDoアプリを改修する開発者です。
+カレンダーモーダルの `.day-header` をクリックしても閉じない問題を調査・修正してください。
+
+# 現象
+- モーダル上部の青い帯（.day-header）にカーソルは出るが、クリックしても閉じない
+
+# 想定原因（優先順）
+1) クリックリスナーが実際のDOMに付与されていない
+   - clone作成後に `dialog.appendChild(clone)` しているが、`clone.querySelector('.day-header')` が null になっている
+   - または JS の置換が効いておらずリスナー追加コードが未反映
+2) モーダル内で `button` が重なってクリックイベントが別要素に吸われている
+3) `closeDialog()` が参照する `activeCell/activeButton` が null で閉じ処理に入っていない
+
+# 調査手順
+1) ブラウザDevToolsでモーダルDOMを確認
+   - `#layout-dialog .day-header` が存在するか
+   - `.day-header` が `.day-button` 内にあるか
+2) Consoleでクリックイベントが発火しているか確認
+   - 一時的に `console.log('close header click')` をクリックハンドラ内に入れる
+3) `calendar-modal.js` に以下のリスナー追加コードが存在するか確認
+
+# 修正指示
+1) モーダル内の `.day-header` に確実にリスナーを付与
+   - `dialog.appendChild(clone)` の直後に以下を挿入
+
+```js
+const closeTarget = clone.querySelector('.day-header');
+if (closeTarget) {
+  closeTarget.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    closeDialog();
+  });
+}
+```
+
+2) もし `.day-header` が `button` の中にある場合、`button` のクリックが優先されるなら
+   - `#layout-dialog .day-button { pointer-events: none; }`
+   - `#layout-dialog .day-header { pointer-events: auto; }`
+   でヘッダークリックを確実に受ける
+
+3) `closeDialog()` が動作していない場合は
+   - `activeCell` が null でも `dialog.close()` と `dialog.innerHTML=''` を確実に実行する
+
+# 受け入れ条件
+- モーダル上部の `.day-header` をクリックすると確実に閉じる
+- ESC / 背景クリックの既存動作は維持
+
+# 変更対象
+- static/js/calendar-modal.js
+- static/css/calendar.css
+

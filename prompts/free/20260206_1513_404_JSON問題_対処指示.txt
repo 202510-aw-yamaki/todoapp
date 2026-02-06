@@ -1,0 +1,19 @@
+﻿問題:
+- /not-found など存在しないURLにアクセスしても、HTMLの404/500ページではなく
+  JSON {"success":false,"message":"Internal Server Error","data":null} が返る。
+
+原因:
+- ApiExceptionHandler が @RestControllerAdvice で全コントローラに適用されているため、
+  通常のMVC画面のエラーもAPI用JSONに置き換えられている。
+
+対処方針（このプロンプトで解決可能）:
+- ApiExceptionHandler をAPIパッケージに限定する。
+  例: @RestControllerAdvice(basePackages = "com.example.todo.api")
+  もしくは @RestControllerAdvice(annotations = RestController.class)
+- これにより、通常画面はHTMLの error/404.html / error/500.html が表示され、
+  /api/* だけがJSONエラーになる。
+
+実装指示:
+- src/main/java/com/example/todo/api/ApiExceptionHandler.java の
+  @RestControllerAdvice に basePackages を付与してAPIに限定する。
+- 動作確認: /not-found でHTML 404、/api/xxxx でJSONエラー。

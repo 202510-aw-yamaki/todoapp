@@ -1,0 +1,41 @@
+﻿目的:
+Spring Boot + Thymeleaf で作っているTODOAPPのindex.html（トップページ）に「日セルをクリックすると、そのセルが画面中央に拡大してモーダル表示され、その日のTODO一覧が表示される」UIを実装したい。カレンダーの位置H1直下【class="actions"】の上部に配置。
+アニメーションは animejs v4 の createLayout を使い、<dialog> をモーダルとして使う。
+
+前提:
+- 既存の Spring Boot + Thymeleaf プロジェクト
+- テンプレート: templates/calendar.html（存在しなければ適切な名前で作成）
+- 静的ファイル: src/main/resources/static/ 配下
+- animejs は CDN禁止。UMD版を static/lib/anime.umd.min.js として同梱して読み込む（既に無ければ配置しやすい形にして、READMEに配置手順を書いて）
+- カレンダーは days を th:each で描画する想定（DayView: date(yyyy-MM-dd), dayOfMonth, todoCount 等）
+
+実装要件:
+1) カレンダーの各日セルを .item.day とし、その中にクリック用ボタン .day-button を置く
+   - data-date="YYYY-MM-DD" と data-duration="450" をセル側に持たせる
+2) 画面に <dialog id="layout-dialog"></dialog> を1つ置く
+3) クリック時の動作:
+   - クリックされた .item.day を cloneNode(true) して dialog に入れる
+   - anime.createLayout(dialog, { children:[...], properties:['--overlay-alpha'] }) を使い、
+     showModal() と is-open の付け外しを layout.update 内で行い、「セル→モーダルへ拡大」遷移を作る
+   - 元のセルは is-open で visibility:hidden（2重表示防止）
+4) モーダル内のTODO表示:
+   - open時に data-date を使い GET /api/todos?date=YYYY-MM-DD を fetch して一覧表示
+   - もし既存APIが無い場合は、最低限のダミーController/DTOで JSON を返すエンドポイントを追加してOK
+   - 表示先は dialog 内 clone の .day-detail（無ければ clone に作って差し込む）
+5) 閉じる動作:
+   - ESC(cancel) または backdropクリック（dialog自身をクリックした場合のみ）で閉じる
+   - 閉じたら元のセルの is-open を外し、元の .day-button に focus を戻す
+   - モーダル内部のクリックでは閉じない（backdrop判定必須）
+6) CSS:
+   - 通常時は .day-detail を非表示、dialog内（モーダル時）だけ表示
+   - is-open のスタイル、dialogの余白/最大幅など最低限整える（派手なデザイン不要）
+7) ファイル構成（例）:
+   - templates/calendar.html
+   - static/js/calendar-modal.js
+   - static/css/calendar.css
+   - static/lib/anime.umd.min.js（配置手順も）
+
+納品:
+- 必要な変更を具体的な差分として実装し、各ファイルの完成形を提示
+- 動作確認手順（クリック→拡大→TODO表示→閉じる→フォーカス復帰）を箇条書きで添える
+- 注意: import {..} from 'animejs' は使わず、UMDのグローバル `anime` から { createLayout, utils } を取得する

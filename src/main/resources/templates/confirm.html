@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title th:text="#{title.todo.confirm}">ToDo確認</title>
+    <link rel="stylesheet" th:href="@{/css/stepper.css}" />
     <style>
         body { font-family: Arial, sans-serif; margin: 24px; }
         table { border-collapse: collapse; width: 100%; max-width: 720px; }
@@ -27,6 +28,7 @@
 </div>
 
 <h1 th:text="#{title.todo.confirm}">ToDo確認</h1>
+<div th:replace="fragments/stepper :: stepper(${stepLabels}, ${currentStep})"></div>
 <p th:text="#{msg.confirm}">上記で登録して良いですか？</p>
 
 <table>

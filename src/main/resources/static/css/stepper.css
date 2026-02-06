@@ -1,0 +1,24 @@
+﻿.stepper { display: flex; align-items: center; gap: 0; margin: 12px 0 16px; }
+.stepper-item { position: relative; flex: 1 1 0; text-align: center; }
+.stepper-item::after { content: ''; position: absolute; top: 16px; left: 50%; right: -50%; height: 2px; background: #ddd; z-index: 0; }
+.stepper-item:last-child::after { display: none; }
+
+.stepper-circle { width: 32px; height: 32px; margin: 0 auto 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; background: #e0e0e0; color: #666; position: relative; z-index: 1; }
+.stepper-label { font-size: 0.9em; color: #666; }
+
+.stepper-item.completed .stepper-circle { background: #2e7d32; color: #fff; }
+.stepper-item.completed .stepper-label { color: #2e7d32; }
+.stepper-item.completed::after { background: #2e7d32; }
+
+.stepper-item.active .stepper-circle { background: #1976d2; color: #fff; }
+.stepper-item.active .stepper-label { color: #1976d2; }
+
+.stepper-item.pending .stepper-circle { background: #e0e0e0; color: #666; }
+.stepper-item.pending .stepper-label { color: #999; }
+
+@media (max-width: 640px) {
+  .stepper { flex-direction: column; align-items: stretch; }
+  .stepper-item { text-align: left; padding-left: 40px; }
+  .stepper-item::after { left: 16px; right: auto; top: 32px; width: 2px; height: calc(100% - 24px); }
+  .stepper-circle { margin: 0; position: absolute; left: 0; top: 0; }
+}

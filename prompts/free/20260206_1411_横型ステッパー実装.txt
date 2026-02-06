@@ -1,0 +1,48 @@
+﻿【指示】
+- 横型ステッパーを各ページに実装
+- Thymeleafフラグメントでステップ描画
+- CSSで丸・横棒・色（完了=緑/現在=青/未到達=灰）
+- a11y: aria-current="step" 付与
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- 4ステップが横並びで表示される
+- 完了/現在/未到達の色分けが反映される
+- ステップ数が変わっても崩れにくい
+
+【非対象（今回はやらないこと）】
+- JSによる動的なステップ変更
+
+【差分】
+- 作成したファイル:
+  - src/main/resources/templates/fragments/stepper.html
+  - src/main/resources/static/css/stepper.css
+- 変更したファイル:
+  - src/main/resources/templates/index.html
+  - src/main/resources/templates/create.html
+  - src/main/resources/templates/confirm.html
+  - src/main/resources/templates/complete.html
+  - src/main/java/com/example/todo/controller/TodoController.java
+- 削除したファイル:
+  - なし
+
+【主要変更点】
+- stepperフラグメントを追加し、各画面に埋め込み
+- Controllerで stepLabels / currentStep を設定
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- /todos でステッパーが表示される
+- 作成/確認/完了ページで現在位置が青になる
+
+【説明】
+- completed/active/pending クラスで色と横棒を制御

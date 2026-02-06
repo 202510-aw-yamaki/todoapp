@@ -115,6 +115,8 @@ public class TodoController {
         model.addAttribute("calendarPrev", currentMonth.minusMonths(1));
         model.addAttribute("calendarNext", currentMonth.plusMonths(1));
         model.addAttribute("days", todoService.buildMonthDays(currentMonth, isAdmin ? null : userId));
+        model.addAttribute("stepLabels", List.of("一覧", "作成", "確認", "完了"));
+        model.addAttribute("currentStep", 1);
         return "index";
     }
 
@@ -123,6 +125,8 @@ public class TodoController {
         model.addAttribute("todoForm", new TodoForm());
         model.addAttribute("categories", categoryService.list());
         model.addAttribute("mode", "create");
+        model.addAttribute("stepLabels", List.of("一覧", "作成", "確認", "完了"));
+        model.addAttribute("currentStep", 2);
         return "create";
     }
 
@@ -133,6 +137,8 @@ public class TodoController {
         model.addAttribute("categories", categoryService.list());
         model.addAttribute("attachments", attachmentService.listByTodoId(id));
         model.addAttribute("mode", "edit");
+        model.addAttribute("stepLabels", List.of("一覧", "作成", "確認", "完了"));
+        model.addAttribute("currentStep", 2);
         return "create";
     }
 
@@ -154,6 +160,8 @@ public class TodoController {
         if ("edit".equals(mode)) {
             model.addAttribute("attachments", attachmentService.listByTodoId(todoForm.getId()));
         }
+        model.addAttribute("stepLabels", List.of("一覧", "作成", "確認", "完了"));
+        model.addAttribute("currentStep", 3);
         return "confirm";
     }
 
@@ -161,6 +169,8 @@ public class TodoController {
     public String back(@ModelAttribute("todoForm") TodoForm todoForm, @RequestParam("mode") String mode, Model model) {
         model.addAttribute("mode", mode);
         model.addAttribute("categories", categoryService.list());
+        model.addAttribute("stepLabels", List.of("一覧", "作成", "確認", "完了"));
+        model.addAttribute("currentStep", 2);
         return "create";
     }
 
@@ -195,6 +205,8 @@ public class TodoController {
         Todo latest = todoService.get(todo.getId());
         model.addAttribute("todo", latest);
         model.addAttribute("attachments", attachmentService.listByTodoId(latest.getId()));
+        model.addAttribute("stepLabels", List.of("一覧", "作成", "確認", "完了"));
+        model.addAttribute("currentStep", 4);
         return "complete";
     }
 

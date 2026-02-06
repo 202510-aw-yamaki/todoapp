@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title th:text="${mode == 'edit'} ? #{title.todo.edit} : #{title.todo.create}">ToDo</title>
+    <link rel="stylesheet" th:href="@{/css/stepper.css}" />
     <style>
         body { font-family: Arial, sans-serif; margin: 24px; }
         table { border-collapse: collapse; width: 100%; max-width: 720px; }
@@ -28,6 +29,7 @@
 </div>
 
 <h1 th:text="${mode == 'edit'} ? #{title.todo.edit} : #{title.todo.create}">ToDo</h1>
+<div th:replace="fragments/stepper :: stepper(${stepLabels}, ${currentStep})"></div>
 
 <form th:action="@{/todos/confirm}" th:object="${todoForm}" method="post">
     <input type="hidden" th:field="*{id}" />

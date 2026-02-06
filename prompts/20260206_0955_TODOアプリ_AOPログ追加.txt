@@ -1,0 +1,46 @@
+﻿【指示】
+- AOPでログ出力機能を追加する
+- Serviceクラスの全メソッドを対象にする
+- @Beforeでメソッド名と引数を出力
+- @AfterReturningでメソッド名と戻り値を出力
+- @AfterThrowingでメソッド名とエラーメッセージを出力
+- @Aroundで実行時間を計測する
+
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC（Thymeleaf）
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- Service配下のメソッド呼び出しでログが出る
+- 例外時にエラーが出力される
+- 実行時間がログに出力される
+
+【非対象（今回はやらないこと）】
+- Controller層のログ拡張
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/aop/LoggingAspect.java
+  - src/main/java/com/example/todo/aop/PerformanceAspect.java
+- 変更したファイル:
+  - pom.xml
+- 削除したファイル:
+  - （なし）
+
+【主要変更点】
+- AOPでService層のログと性能計測を追加
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- Serviceメソッド呼び出し時にログが出ることを確認
+- 例外発生時にエラーが出ることを確認
+
+【説明】
+- Spring AOPで横断的なログ出力を実装

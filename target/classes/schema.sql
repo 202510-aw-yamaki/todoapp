@@ -25,6 +25,17 @@ CREATE TABLE IF NOT EXISTS todo (
     CONSTRAINT fk_todo_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS todo_attachment (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    todo_id BIGINT NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    stored_name VARCHAR(255) NOT NULL,
+    content_type VARCHAR(100),
+    size BIGINT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_attachment_todo FOREIGN KEY (todo_id) REFERENCES todo(id)
+);
+
 CREATE TABLE IF NOT EXISTS todo_history (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     todo_id BIGINT NOT NULL,

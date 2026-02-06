@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todo.repository.TodoAttachmentMapper">
+
+    <resultMap id="AttachmentResultMap" type="com.example.todo.entity.TodoAttachment">
+        <id column="id" property="id" />
+        <result column="todo_id" property="todoId" />
+        <result column="original_name" property="originalName" />
+        <result column="stored_name" property="storedName" />
+        <result column="content_type" property="contentType" />
+        <result column="size" property="size" />
+        <result column="created_at" property="createdAt" />
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO todo_attachment (todo_id, original_name, stored_name, content_type, size, created_at)
+        VALUES (#{todoId}, #{originalName}, #{storedName}, #{contentType}, #{size}, #{createdAt})
+    </insert>
+
+    <select id="findByTodoId" resultMap="AttachmentResultMap">
+        SELECT id, todo_id, original_name, stored_name, content_type, size, created_at
+        FROM todo_attachment
+        WHERE todo_id = #{todoId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findById" resultMap="AttachmentResultMap">
+        SELECT id, todo_id, original_name, stored_name, content_type, size, created_at
+        FROM todo_attachment
+        WHERE id = #{id}
+    </select>
+
+    <select id="findTodoId" resultType="long">
+        SELECT todo_id
+        FROM todo_attachment
+        WHERE id = #{id}
+    </select>
+
+    <delete id="delete">
+        DELETE FROM todo_attachment
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

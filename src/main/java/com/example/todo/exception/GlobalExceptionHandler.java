@@ -12,9 +12,9 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(TodoNotFoundException.class)
-    public ModelAndView handleNotFound(TodoNotFoundException ex) {
-        logger.warn("Todo not found", ex);
+    @ExceptionHandler({TodoNotFoundException.class, AttachmentNotFoundException.class})
+    public ModelAndView handleNotFound(RuntimeException ex) {
+        logger.warn("Resource not found", ex);
         ModelAndView mv = new ModelAndView("error/404");
         mv.addObject("message", ex.getMessage());
         return mv;

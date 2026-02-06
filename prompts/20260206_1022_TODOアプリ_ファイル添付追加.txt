@@ -1,0 +1,68 @@
+【指示】
+- MultipartFileを使用してファイルをアップロード
+- application.propertiesでファイルサイズ上限（10MB）を設定
+- TodoAttachmentエンティティで添付ファイルのメタ情報を管理
+- FileStorageServiceでファイル保存（UUID形式のファイル名に変換）
+- ファイル名のサニタイズ（パストラバーサル対策）
+- ダウンロード機能（Content-Dispositionヘッダーでファイル名を指定）
+- 添付ファイルの削除機能
+- 許可拡張子/MIMEの制限と簡易ウイルスチェックを追加
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- 10MB上限でファイルをアップロードできる
+- 添付ファイルがDBに保存され、UUID形式でファイルを保存できる
+- 不正なファイル名やパストラバーサルが拒否される
+- 許可拡張子/MIME以外は拒否される
+- ダウンロード時に元ファイル名で取得できる
+- 添付ファイルを削除できる
+
+【非対象（今回はやらないこと）】
+- 添付ファイルのバージョン管理
+- クラウドストレージ連携
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/entity/TodoAttachment.java
+  - src/main/java/com/example/todo/repository/TodoAttachmentMapper.java
+  - src/main/java/com/example/todo/service/FileStorageService.java
+  - src/main/java/com/example/todo/service/TodoAttachmentService.java
+  - src/main/java/com/example/todo/exception/AttachmentNotFoundException.java
+  - src/main/resources/mapper/TodoAttachmentMapper.xml
+- 変更したファイル:
+  - src/main/resources/application.properties
+  - src/main/resources/schema.sql
+  - src/main/java/com/example/todo/service/TodoSecurityService.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/exception/GlobalExceptionHandler.java
+  - src/main/java/com/example/todo/api/ApiExceptionHandler.java
+  - src/main/resources/templates/create.html
+  - src/main/resources/templates/complete.html
+- 削除したファイル:
+  - なし
+
+【主要変更点】
+- 添付ファイルのメタ情報管理と保存機能を追加
+- 許可拡張子/MIMEの制限、EICAR文字列による簡易ウイルスチェックを追加
+- 編集画面で添付のアップロード/削除/ダウンロードを可能に
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- 編集画面でファイルをアップロードし、一覧に表示されることを確認
+- ダウンロード時に元のファイル名で取得できることを確認
+- 許可されていない拡張子/MIMEのファイルが拒否されることを確認
+- 添付ファイル削除が反映されることを確認
+
+【説明】
+- TodoAttachmentでメタ情報を保持し、UUID名で保存して実ファイルと論理名を分離
+- FileStorageServiceでサニタイズと許可形式チェックを実施
+- 簡易ウイルスチェックはEICAR文字列検出による最低限の対策

@@ -2,18 +2,24 @@
 
 import com.example.todo.entity.Category;
 import com.example.todo.entity.Todo;
+import com.example.todo.entity.TodoAttachment;
 import com.example.todo.form.TodoForm;
 import com.example.todo.service.CategoryService;
+import com.example.todo.service.FileStorageService;
+import com.example.todo.service.TodoAttachmentService;
 import com.example.todo.service.TodoService;
 import com.example.todo.service.UserService;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -27,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class TodoController {
@@ -34,11 +42,21 @@ public class TodoController {
     private final TodoService todoService;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final TodoAttachmentService attachmentService;
+    private final FileStorageService fileStorageService;
 
-    public TodoController(TodoService todoService, CategoryService categoryService, UserService userService) {
+    public TodoController(
+        TodoService todoService,
+        CategoryService categoryService,
+        UserService userService,
+        TodoAttachmentService attachmentService,
+        FileStorageService fileStorageService
+    ) {
         this.todoService = todoService;
         this.categoryService = categoryService;
         this.userService = userService;
+        this.attachmentService = attachmentService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping("/")
@@ -100,6 +118,7 @@ public class TodoController {
         Todo todo = todoService.get(id);
         model.addAttribute("todoForm", toForm(todo));
         model.addAttribute("categories", categoryService.list());
+        model.addAttribute("attachments", attachmentService.listByTodoId(id));
         model.addAttribute("mode", "edit");
         return "create";
     }
@@ -159,6 +178,7 @@ public class TodoController {
         }
         Todo latest = todoService.get(todo.getId());
         model.addAttribute("todo", latest);
+        model.addAttribute("attachments", attachmentService.listByTodoId(latest.getId()));
         return "complete";
     }
 
@@ -297,6 +317,55 @@ public class TodoController {
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
         headers.add(HttpHeaders.CONTENT_TYPE, "text/csv; charset=UTF-8");
         return ResponseEntity.ok().headers(headers).body(bytes);
+    }
+
+    @PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
+    @PostMapping("/todos/{id}/attachments")
+    public String uploadAttachment(
+        @PathVariable Long id,
+        @RequestParam("file") MultipartFile file,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            attachmentService.add(id, file);
+            redirectAttributes.addFlashAttribute("attachmentMessage", "ファイルをアップロードしました。");
+        } catch (IllegalArgumentException | IOException ex) {
+            redirectAttributes.addFlashAttribute("attachmentError", ex.getMessage());
+        }
+        return "redirect:/todos/" + id + "/edit";
+    }
+
+    @PreAuthorize("@todoSecurityService.isAttachmentOwnerOrAdmin(#attachmentId, principal)")
+    @GetMapping("/todos/attachments/{attachmentId}/download")
+    public ResponseEntity<Resource> downloadAttachment(@PathVariable Long attachmentId) throws IOException {
+        TodoAttachment attachment = attachmentService.get(attachmentId);
+        Resource resource = fileStorageService.loadAsResource(attachment.getStoredName());
+        String encodedName = java.net.URLEncoder.encode(attachment.getOriginalName(), StandardCharsets.UTF_8);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=\"" + attachment.getOriginalName() + "\"; filename*=UTF-8''" + encodedName);
+        MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+        if (attachment.getContentType() != null && !attachment.getContentType().isBlank()) {
+            mediaType = MediaType.parseMediaType(attachment.getContentType());
+        }
+        headers.setContentType(mediaType);
+        return ResponseEntity.ok().headers(headers).body(resource);
+    }
+
+    @PreAuthorize("@todoSecurityService.isAttachmentOwnerOrAdmin(#attachmentId, principal)")
+    @PostMapping("/todos/attachments/{attachmentId}/delete")
+    public String deleteAttachment(
+        @PathVariable Long attachmentId,
+        RedirectAttributes redirectAttributes
+    ) {
+        Long todoId = attachmentService.get(attachmentId).getTodoId();
+        try {
+            attachmentService.delete(attachmentId);
+            redirectAttributes.addFlashAttribute("attachmentMessage", "添付ファイルを削除しました。");
+        } catch (IOException ex) {
+            redirectAttributes.addFlashAttribute("attachmentError", "削除に失敗しました。");
+        }
+        return "redirect:/todos/" + todoId + "/edit";
     }
 
     private Boolean resolveCompleted(String status) {

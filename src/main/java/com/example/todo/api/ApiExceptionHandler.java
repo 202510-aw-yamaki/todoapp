@@ -1,5 +1,6 @@
 package com.example.todo.api;
 
+import com.example.todo.exception.AttachmentNotFoundException;
 import com.example.todo.exception.TodoNotFoundException;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -33,9 +34,9 @@ public class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponse.error(message));
     }
 
-    @ExceptionHandler(TodoNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleTodoNotFound(TodoNotFoundException ex) {
-        logger.warn("Todo not found", ex);
+    @ExceptionHandler({TodoNotFoundException.class, AttachmentNotFoundException.class})
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(RuntimeException ex) {
+        logger.warn("Resource not found", ex);
         return ResponseEntity.status(404).body(ApiResponse.error(ex.getMessage()));
     }
 

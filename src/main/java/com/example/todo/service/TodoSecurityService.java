@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.repository.TodoAttachmentMapper;
 import com.example.todo.repository.TodoMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -8,10 +9,12 @@ import org.springframework.stereotype.Service;
 public class TodoSecurityService {
 
     private final TodoMapper todoMapper;
+    private final TodoAttachmentMapper attachmentMapper;
     private final UserService userService;
 
-    public TodoSecurityService(TodoMapper todoMapper, UserService userService) {
+    public TodoSecurityService(TodoMapper todoMapper, TodoAttachmentMapper attachmentMapper, UserService userService) {
         this.todoMapper = todoMapper;
+        this.attachmentMapper = attachmentMapper;
         this.userService = userService;
     }
 
@@ -39,5 +42,16 @@ public class TodoSecurityService {
             }
         }
         return isOwner(id, principal);
+    }
+
+    public boolean isAttachmentOwnerOrAdmin(Long attachmentId, Object principal) {
+        if (attachmentId == null) {
+            return false;
+        }
+        Long todoId = attachmentMapper.findTodoId(attachmentId);
+        if (todoId == null) {
+            return false;
+        }
+        return isOwnerOrAdmin(todoId, principal);
     }
 }

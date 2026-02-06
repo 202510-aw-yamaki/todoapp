@@ -35,6 +35,7 @@
                     <div class="day-header">
                         <span class="day-num" th:text="${d.dayOfMonth}">1</span>
                         <span class="day-rokuyo" th:text="${d.rokuyo}">大安</span>
+                        <span class="close-hint">ここをクリックすれば閉じます</span>
                     </div>
                     <div class="todo-lines">
                         <div class="todo-line" th:if="${d.topTitles.size() > 0}" th:text="${d.topTitles[0]}"></div>
@@ -52,4 +53,7 @@
 </div>
 </body>
 </html>
+
+
+
 

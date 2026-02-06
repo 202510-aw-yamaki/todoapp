@@ -1,20 +1,20 @@
-‚ ‚È‚½‚ÍSpring Boot + Thymeleaf ‚ÌToDoƒAƒvƒŠ‚ğ‰üC‚·‚éŠJ”­Ò‚Å‚·B
-ƒJƒŒƒ“ƒ_[ƒ‚[ƒ_ƒ‹‚Ìu•Â‚¶‚éˆÄ“àv‚ª•\¦‚³‚ê‚¸Aƒwƒbƒ_[ƒNƒŠƒbƒN‚Å•Â‚¶‚È‚¢–â‘è‚ğC³‚µ‚Ä‚­‚¾‚³‚¢B
+ï»¿ã‚ãªãŸã¯Spring Boot + Thymeleaf ã®ToDoã‚¢ãƒ—ãƒªã‚’æ”¹ä¿®ã™ã‚‹é–‹ç™ºè€…ã§ã™ã€‚
+ã‚«ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ¢ãƒ¼ãƒ€ãƒ«ã®ã€Œé–‰ã˜ã‚‹æ¡ˆå†…ã€ãŒè¡¨ç¤ºã•ã‚Œãšã€ãƒ˜ãƒƒãƒ€ãƒ¼ã‚¯ãƒªãƒƒã‚¯ã§é–‰ã˜ãªã„å•é¡Œã‚’ä¿®æ­£ã—ã¦ãã ã•ã„ã€‚
 
-# Œ»óŠm”F
-- templates/calendar.html ‚Ì `.day-header` ‚Éu‚±‚±‚ğƒNƒŠƒbƒN‚·‚ê‚Î•Â‚¶‚Ü‚·v‚Ì•¶Œ¾‚ª‘¶İ‚µ‚È‚¢
-- static/js/calendar-modal.js ‚É `.day-header` ‚Ì click ƒŠƒXƒi[‚ª‘¶İ‚µ‚È‚¢
-- static/css/calendar.css ‚É‚Í `.close-hint` ‚Æƒ‚[ƒ_ƒ‹—p `.day-header` ƒXƒ^ƒCƒ‹‚ª‘¶İ‚·‚é
+# ç¾çŠ¶ç¢ºèª
+- templates/calendar.html ã® `.day-header` ã«ã€Œã“ã“ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚Œã°é–‰ã˜ã¾ã™ã€ã®æ–‡è¨€ãŒå­˜åœ¨ã—ãªã„
+- static/js/calendar-modal.js ã« `.day-header` ã® click ãƒªã‚¹ãƒŠãƒ¼ãŒå­˜åœ¨ã—ãªã„
+- static/css/calendar.css ã«ã¯ `.close-hint` ã¨ãƒ¢ãƒ¼ãƒ€ãƒ«ç”¨ `.day-header` ã‚¹ã‚¿ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚‹
 
-# Œ´ˆö
-- calendar.html ‚Æ calendar-modal.js ‚Ö‚Ì•ÏX‚ª–¢”½‰f‚Ü‚½‚Íã‘‚«‚³‚ê‚Ä‚¢‚é
+# åŸå› 
+- calendar.html ã¨ calendar-modal.js ã¸ã®å¤‰æ›´ãŒæœªåæ˜ ã¾ãŸã¯ä¸Šæ›¸ãã•ã‚Œã¦ã„ã‚‹
 
-# C³w¦
-1) `templates/calendar.html` ‚Ì `.day-header` ‚ÉˆÄ“à•¶‚ğ’Ç‰Á
-   - —á: `<span class="close-hint">‚±‚±‚ğƒNƒŠƒbƒN‚·‚ê‚Î•Â‚¶‚Ü‚·</span>`
+# ä¿®æ­£æŒ‡ç¤º
+1) `templates/calendar.html` ã® `.day-header` ã«æ¡ˆå†…æ–‡ã‚’è¿½åŠ 
+   - ä¾‹: `<span class="close-hint">ã“ã“ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚Œã°é–‰ã˜ã¾ã™</span>`
 
-2) `static/js/calendar-modal.js` ‚Åƒ‚[ƒ_ƒ‹¶¬Œã‚É `.day-header` ‚ğ•Â‚¶‚éƒŠƒXƒi[‚ÅŒ‹ü
-   - `dialog.appendChild(clone)` ‚Ì’¼Œã‚É’Ç‰Á‚·‚é
+2) `static/js/calendar-modal.js` ã§ãƒ¢ãƒ¼ãƒ€ãƒ«ç”Ÿæˆå¾Œã« `.day-header` ã‚’é–‰ã˜ã‚‹ãƒªã‚¹ãƒŠãƒ¼ã§çµç·š
+   - `dialog.appendChild(clone)` ã®ç›´å¾Œã«è¿½åŠ ã™ã‚‹
 
 ```js
 const closeTarget = clone.querySelector('.day-header');
@@ -27,16 +27,17 @@ if (closeTarget) {
 }
 ```
 
-3) ƒNƒŠƒbƒN‚ªE‚¦‚È‚¢ê‡‚Ì•ÛŒ¯iCSSj
-   - Šù‚ÉˆÈ‰º‚ª“ü‚Á‚Ä‚¢‚é‚©Šm”F
-   - ‚È‚¢ê‡‚Í `static/css/calendar.css` ‚É’Ç‰Á
+3) ã‚¯ãƒªãƒƒã‚¯ãŒæ‹¾ãˆãªã„å ´åˆã®ä¿é™ºï¼ˆCSSï¼‰
+   - æ—¢ã«ä»¥ä¸‹ãŒå…¥ã£ã¦ã„ã‚‹ã‹ç¢ºèª
+   - ãªã„å ´åˆã¯ `static/css/calendar.css` ã«è¿½åŠ 
 
 ```css
 #layout-dialog .day-button { pointer-events: none; }
 #layout-dialog .day-header { pointer-events: auto; }
 ```
 
-# ó‚¯“ü‚êğŒ
-- ƒ‚[ƒ_ƒ‹ã•”‚Éu‚±‚±‚ğƒNƒŠƒbƒN‚·‚ê‚Î•Â‚¶‚Ü‚·v‚ª•\¦‚³‚ê‚é
-- `.day-header` ƒNƒŠƒbƒN‚Åƒ‚[ƒ_ƒ‹‚ª•Â‚¶‚é
-- ESC / ”wŒiƒNƒŠƒbƒN‚Å•Â‚¶‚é‹““®‚ÍˆÛ‚³‚ê‚é
+# å—ã‘å…¥ã‚Œæ¡ä»¶
+- ãƒ¢ãƒ¼ãƒ€ãƒ«ä¸Šéƒ¨ã«ã€Œã“ã“ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚Œã°é–‰ã˜ã¾ã™ã€ãŒè¡¨ç¤ºã•ã‚Œã‚‹
+- `.day-header` ã‚¯ãƒªãƒƒã‚¯ã§ãƒ¢ãƒ¼ãƒ€ãƒ«ãŒé–‰ã˜ã‚‹
+- ESC / èƒŒæ™¯ã‚¯ãƒªãƒƒã‚¯ã§é–‰ã˜ã‚‹æŒ™å‹•ã¯ç¶­æŒã•ã‚Œã‚‹
+

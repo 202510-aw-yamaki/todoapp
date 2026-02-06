@@ -107,6 +107,15 @@
     dialog.innerHTML = '';
     dialog.appendChild(clone);
 
+    const closeTarget = clone.querySelector('.day-header');
+    if (closeTarget) {
+      closeTarget.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        closeDialog();
+      });
+    }
+
     cell.classList.add('is-open');
 
     if (hasAnime && window.anime.createLayout) {
@@ -139,5 +148,7 @@
     }
   });
 })();
+
+
 
 

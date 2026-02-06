@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>ToDo確認</title>
+    <title th:text="#{title.todo.confirm}">ToDo確認</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 24px; }
         table { border-collapse: collapse; width: 100%; max-width: 720px; }
@@ -10,31 +10,44 @@
         th { background: #f5f5f5; width: 160px; text-align: left; }
         .actions { margin-top: 12px; display: flex; gap: 12px; }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; color: #fff; }
+        .attachments { margin-top: 24px; }
+        .attachments table { margin-top: 8px; }
+        .lang { margin-bottom: 12px; }
+        .lang a { margin-right: 8px; }
     </style>
 </head>
 <body>
-<h1>ToDo確認</h1>
-<p>上記で登録して良いですか？</p>
+<div class="lang">
+    <a th:href="@{|?lang=ja|}">日本語</a>
+    <a th:href="@{|?lang=en|}">English</a>
+    <a th:href="@{|?lang=fr|}">Français</a>
+    <a th:href="@{|?lang=es|}">Español</a>
+    <a th:href="@{|?lang=ko|}">한국어</a>
+    <a th:href="@{|?lang=zh|}">中文</a>
+</div>
+
+<h1 th:text="#{title.todo.confirm}">ToDo確認</h1>
+<p th:text="#{msg.confirm}">上記で登録して良いですか？</p>
 
 <table>
     <tr>
-        <th>登録者</th>
+        <th th:text="#{label.author}">登録者</th>
         <td th:text="${todoForm.author}"></td>
     </tr>
     <tr>
-        <th>タイトル</th>
+        <th th:text="#{label.title}">タイトル</th>
         <td th:text="${todoForm.title}"></td>
     </tr>
     <tr>
-        <th>詳細</th>
+        <th th:text="#{label.detail}">詳細</th>
         <td th:text="${todoForm.detail}"></td>
     </tr>
     <tr>
-        <th>期限日</th>
+        <th th:text="#{label.deadline}">期限日</th>
         <td th:text="${deadlineLabel}"></td>
     </tr>
     <tr>
-        <th>カテゴリ</th>
+        <th th:text="#{label.category}">カテゴリ</th>
         <td>
             <span class="badge category"
                   th:if="${category != null}"
@@ -43,6 +56,25 @@
         </td>
     </tr>
 </table>
+
+<div class="attachments">
+    <h2 th:text="#{label.attachments}">添付ファイル</h2>
+    <table th:if="${attachments != null && !attachments.isEmpty()}">
+        <thead>
+        <tr>
+            <th th:text="#{label.filename}">ファイル名</th>
+            <th th:text="#{label.size}">サイズ</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${attachments}">
+            <td th:text="${a.originalName}"></td>
+            <td th:text="${#numbers.formatInteger(a.size, 0, 'COMMA')} + ' bytes'"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${attachments == null || attachments.isEmpty()}" th:text="#{msg.noAttachments}">添付ファイルはありません。</div>
+</div>
 
 <div class="actions">
     <form th:action="@{/todos/complete}" method="post">
@@ -53,7 +85,7 @@
         <input type="hidden" name="deadline" th:value="${todoForm.deadline}" />
         <input type="hidden" name="categoryId" th:value="${todoForm.categoryId}" />
         <input type="hidden" name="mode" th:value="${mode}" />
-        <button type="submit" th:text="${mode == 'edit'} ? '更新' : '登録'"></button>
+        <button type="submit" th:text="${mode == 'edit'} ? #{button.update} : #{button.register}">登録</button>
     </form>
 
     <form th:action="@{/todos/back}" method="post">
@@ -64,7 +96,7 @@
         <input type="hidden" name="deadline" th:value="${todoForm.deadline}" />
         <input type="hidden" name="categoryId" th:value="${todoForm.categoryId}" />
         <input type="hidden" name="mode" th:value="${mode}" />
-        <button type="submit">修正</button>
+        <button type="submit" th:text="#{button.fix}">修正</button>
     </form>
 </div>
 </body>

@@ -1,0 +1,74 @@
+﻿【指示】
+- MessageSourceで多言語対応
+- SessionLocaleResolverでセッションベースのロケール管理
+- LocaleChangeInterceptorでURLパラメータ(?lang=ja/?lang=en)による切り替え
+- messages_ja/messages_en等で文言を定義
+- Thymeleafで#{key}参照
+- バリデーションメッセージも多言語対応
+- 可能ならフランス語・スペイン語・韓国語・中国語も対応
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- Maven：使用
+- パッケージ名：com.example.todo
+- 画面(MVC)/API：MVC
+- DB：H2
+
+【受け入れ条件（完了条件）】
+- ?lang=ja / ?lang=en で表示言語が切り替わる
+- MessageSourceを利用して画面文言が多言語化される
+- バリデーションメッセージが多言語化される
+- fr/es/ko/zh のメッセージファイルが用意される
+
+【非対象（今回はやらないこと）】
+- 多言語対応のテスト自動化
+- 翻訳の品質保証
+
+【差分】
+- 作成したファイル:
+  - src/main/java/com/example/todo/config/WebMvcConfig.java
+  - src/main/resources/messages_ja.properties
+  - src/main/resources/messages_en.properties
+  - src/main/resources/messages_fr.properties
+  - src/main/resources/messages_es.properties
+  - src/main/resources/messages_ko.properties
+  - src/main/resources/messages_zh.properties
+  - src/main/resources/ValidationMessages_ja.properties
+  - src/main/resources/ValidationMessages_en.properties
+  - src/main/resources/ValidationMessages_fr.properties
+  - src/main/resources/ValidationMessages_es.properties
+  - src/main/resources/ValidationMessages_ko.properties
+  - src/main/resources/ValidationMessages_zh.properties
+- 変更したファイル:
+  - src/main/resources/application.properties
+  - src/main/java/com/example/todo/form/TodoForm.java
+  - src/main/java/com/example/todo/controller/TodoController.java
+  - src/main/java/com/example/todo/exception/GlobalExceptionHandler.java
+  - src/main/resources/templates/index.html
+  - src/main/resources/templates/create.html
+  - src/main/resources/templates/confirm.html
+  - src/main/resources/templates/complete.html
+  - src/main/resources/templates/login.html
+  - src/main/resources/templates/error/404.html
+  - src/main/resources/templates/error/500.html
+- 削除したファイル:
+  - なし
+
+【主要変更点】
+- WebMvcConfigでMessageSource/LocaleResolver/LocaleChangeInterceptorを設定
+- 画面文言を#{key}参照に変更し、多言語ファイルで管理
+- バリデーションメッセージをValidationMessagesで多言語化
+
+【実行コマンド】
+- mvn spring-boot:run
+
+【確認手順】
+- http://localhost:8080/todos?lang=ja と ?lang=en で表示が切り替わる
+- バリデーションエラー文言が各言語で表示される
+- fr/es/ko/zh の表示が確認できる
+
+【説明】
+- SessionLocaleResolverでセッション単位のロケール管理
+- LocaleChangeInterceptorでlangパラメータを検知
+- MessageSourceでテンプレート文言と検証メッセージを統一管理

@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>ToDo完了</title>
+    <title th:text="#{title.todo.complete}">ToDo完了</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 24px; }
         table { border-collapse: collapse; width: 100%; max-width: 720px; }
@@ -12,31 +12,42 @@
         .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; color: #fff; }
         .attachments { margin-top: 24px; }
         .attachments table { margin-top: 8px; }
+        .lang { margin-bottom: 12px; }
+        .lang a { margin-right: 8px; }
     </style>
 </head>
 <body>
-<h1>ToDo完了</h1>
-<p>上記で登録しました。</p>
+<div class="lang">
+    <a th:href="@{|?lang=ja|}">日本語</a>
+    <a th:href="@{|?lang=en|}">English</a>
+    <a th:href="@{|?lang=fr|}">Français</a>
+    <a th:href="@{|?lang=es|}">Español</a>
+    <a th:href="@{|?lang=ko|}">한국어</a>
+    <a th:href="@{|?lang=zh|}">中文</a>
+</div>
+
+<h1 th:text="#{title.todo.complete}">ToDo完了</h1>
+<p th:text="#{msg.completed}">上記で登録しました。</p>
 
 <table>
     <tr>
-        <th>登録者</th>
+        <th th:text="#{label.author}">登録者</th>
         <td th:text="${todo.author}"></td>
     </tr>
     <tr>
-        <th>タイトル</th>
+        <th th:text="#{label.title}">タイトル</th>
         <td th:text="${todo.title}"></td>
     </tr>
     <tr>
-        <th>詳細</th>
+        <th th:text="#{label.detail}">詳細</th>
         <td th:text="${todo.detail}"></td>
     </tr>
     <tr>
-        <th>期限日</th>
+        <th th:text="#{label.deadline}">期限日</th>
         <td th:text="${todo.deadlineLabel}"></td>
     </tr>
     <tr>
-        <th>カテゴリ</th>
+        <th th:text="#{label.category}">カテゴリ</th>
         <td>
             <span class="badge" th:if="${todo.category != null}" th:text="${todo.category.name}"
                   th:style="|background:${todo.category.color}|"></span>
@@ -45,12 +56,12 @@
 </table>
 
 <div class="attachments">
-    <h2>添付ファイル</h2>
+    <h2 th:text="#{label.attachments}">添付ファイル</h2>
     <table th:if="${attachments != null && !attachments.isEmpty()}">
         <thead>
         <tr>
-            <th>ファイル名</th>
-            <th>サイズ</th>
+            <th th:text="#{label.filename}">ファイル名</th>
+            <th th:text="#{label.size}">サイズ</th>
         </tr>
         </thead>
         <tbody>
@@ -62,14 +73,14 @@
         </tr>
         </tbody>
     </table>
-    <div th:if="${attachments == null || attachments.isEmpty()}">添付ファイルはありません。</div>
+    <div th:if="${attachments == null || attachments.isEmpty()}" th:text="#{msg.noAttachments}">添付ファイルはありません。</div>
     <div class="actions">
-        <a th:href="@{/todos/{id}/edit(id=${todo.id})}">添付ファイルを追加/削除</a>
+        <a th:href="@{/todos/{id}/edit(id=${todo.id})}" th:text="#{link.manageAttachments}">添付ファイルを追加/削除</a>
     </div>
 </div>
 
 <div class="actions">
-    <a th:href="@{/todos}">一覧へ</a>
+    <a th:href="@{/todos}" th:text="#{link.toList}">一覧へ</a>
 </div>
 </body>
 </html>

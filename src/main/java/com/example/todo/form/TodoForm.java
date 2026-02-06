@@ -1,4 +1,4 @@
-package com.example.todo.form;
+﻿package com.example.todo.form;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,18 +10,18 @@ public class TodoForm {
 
     private Long id;
 
-    @NotBlank(message = "登録者は必須です")
-    @Size(max = 50, message = "登録者は50文字以内で入力してください")
+    @NotBlank(message = "{validation.author.required}")
+    @Size(max = 50, message = "{validation.author.size}")
     private String author;
 
-    @NotBlank(message = "タイトルは必須です")
-    @Size(max = 100, message = "タイトルは100文字以内で入力してください")
+    @NotBlank(message = "{validation.title.required}")
+    @Size(max = 100, message = "{validation.title.size}")
     private String title;
 
-    @Size(max = 500, message = "詳細は500文字以内で入力してください")
+    @Size(max = 500, message = "{validation.detail.size}")
     private String detail;
 
-    @NotNull(message = "カテゴリは必須です")
+    @NotNull(message = "{validation.category.required}")
     private Long categoryId;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

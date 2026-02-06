@@ -217,7 +217,7 @@
                COUNT(*) AS count
         FROM todo t
         WHERE t.created_at >= #{start}
-          AND t.created_at < #{end}
+          AND t.created_at &lt; #{end}
         <if test="userId != null">
             AND t.user_id = #{userId}
         </if>

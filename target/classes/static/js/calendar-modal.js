@@ -5,6 +5,45 @@
   const calendar = document.querySelector('.calendar');
   if (!calendar) return;
 
+  const sprite = document.querySelector('.assistant-sprite');
+  if (sprite) {
+    const cols = 4;
+    const rows = 3;
+    const sheetWidth = 1264;
+    const sheetHeight = 848;
+    const frameWidth = Math.round(sheetWidth / cols);
+    const frameHeight = Math.round(sheetHeight / rows);
+    const residualX = sheetWidth - frameWidth * cols;
+    const residualY = sheetHeight - frameHeight * rows;
+    const totalFrames = cols * rows - 1;
+    const frameMs = 360;
+    let frame = 0;
+
+    sprite.style.backgroundPosition = '0px 0px';
+
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced) {
+      setInterval(() => {
+        const col = frame % cols;
+        const row = Math.floor(frame / cols);
+        const x = -col * frameWidth + (col === cols - 1 ? residualX : 0);
+        const y = -row * frameHeight + (row === rows - 1 ? residualY : 0);
+        sprite.style.backgroundPosition = `${x}px ${y}px`;
+        frame = (frame + 1) % totalFrames;
+      }, frameMs);
+    }
+  }
+
+  const bubble = document.getElementById('assistantBubble');
+  const bubbleMessage = bubble ? bubble.querySelector('.assistant-bubble-message') : null;
+  const bubbleList = bubble ? bubble.querySelector('.assistant-bubble-list') : null;
+  const bubbleText = {
+    empty: (bubble && bubble.dataset.empty) || '日付を選択してください',
+    none: (bubble && bubble.dataset.none) || 'この日のTODOはありません',
+    loading: (bubble && bubble.dataset.loading) || '読み込み中...',
+    loadError: (bubble && bubble.dataset.loadError) || '読み込みに失敗しました'
+  };
+
   const hasAnime = typeof window.anime !== 'undefined' && window.anime;
   if (!hasAnime) {
     console.warn('animejs UMD is not loaded. Place anime.umd.min.js under /static/lib/.');
@@ -22,6 +61,39 @@
 
   let activeCell = null;
   let activeButton = null;
+
+  function animateBubble() {
+    if (!bubble) return;
+    bubble.classList.remove('is-updating');
+    void bubble.offsetWidth;
+    bubble.classList.add('is-updating');
+  }
+
+  function setBubbleMessage(text) {
+    if (!bubbleMessage || !bubbleList) return;
+    bubbleMessage.textContent = text;
+    bubbleMessage.hidden = false;
+    bubbleList.hidden = true;
+    bubbleList.innerHTML = '';
+    animateBubble();
+  }
+
+  function setBubbleTodos(data) {
+    if (!bubbleMessage || !bubbleList) return;
+    if (!data.length) {
+      setBubbleMessage(bubbleText.none);
+      return;
+    }
+    bubbleList.innerHTML = '';
+    data.forEach((t) => {
+      const li = document.createElement('li');
+      li.textContent = t.title || '';
+      bubbleList.appendChild(li);
+    });
+    bubbleMessage.hidden = true;
+    bubbleList.hidden = false;
+    animateBubble();
+  }
 
   function closeDialog() {
     if (activeCell) {
@@ -134,17 +206,30 @@
       dialog.showModal();
     }
 
+    if (bubble) {
+      setBubbleMessage(bubbleText.loading);
+    }
+
     try {
       const res = await fetch(`/api/todos?date=${encodeURIComponent(date)}`);
       if (!res.ok) {
         detail.textContent = i18n.loadError;
+        if (bubble) {
+          setBubbleMessage(bubbleText.loadError);
+        }
         return;
       }
       const json = await res.json();
       const data = json && json.data ? json.data : [];
       renderTodos(detail, data);
+      if (bubble) {
+        setBubbleTodos(data);
+      }
     } catch (err) {
       detail.textContent = i18n.loadError;
+      if (bubble) {
+        setBubbleMessage(bubbleText.loadError);
+      }
     }
   });
 })();

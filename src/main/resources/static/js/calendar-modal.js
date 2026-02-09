@@ -62,15 +62,15 @@
   }
 
   function ensureSidePanel() {
-    if (sidePanel) {
+    if (!sidePanel || !sidePanel.isConnected) {
+      sidePanel = document.createElement('div');
+      sidePanel.className = 'modal-side';
+      frameImg = document.createElement('img');
+      frameImg.alt = 'assi animation';
+      sidePanel.appendChild(frameImg);
+      dialog.appendChild(sidePanel);
       return;
     }
-    sidePanel = document.createElement('div');
-    sidePanel.className = 'modal-side';
-    frameImg = document.createElement('img');
-    frameImg.alt = 'assi animation';
-    sidePanel.appendChild(frameImg);
-    dialog.appendChild(sidePanel);
   }
 
   function preloadFrames() {

@@ -25,8 +25,7 @@
   let frameTimer = null;
   let frameIndex = 0;
   let sidePanel = null;
-  let frameA = null;
-  let frameB = null;
+  let frameImg = null;
   const frames = [
     '/images/assi/assi_01.png',
     '/images/assi/assi_02.png',
@@ -68,14 +67,9 @@
     }
     sidePanel = document.createElement('div');
     sidePanel.className = 'modal-side';
-    frameA = document.createElement('img');
-    frameB = document.createElement('img');
-    frameA.className = 'frame frame-a';
-    frameB.className = 'frame frame-b';
-    frameA.alt = 'assi animation';
-    frameB.alt = 'assi animation';
-    sidePanel.appendChild(frameA);
-    sidePanel.appendChild(frameB);
+    frameImg = document.createElement('img');
+    frameImg.alt = 'assi animation';
+    sidePanel.appendChild(frameImg);
     document.body.appendChild(sidePanel);
   }
 
@@ -88,7 +82,7 @@
 
   function startFrameLoop(intervalMs) {
     ensureSidePanel();
-    if (!frameA || !frameB) {
+    if (!frameImg) {
       return;
     }
     if (frameTimer) {
@@ -96,19 +90,17 @@
       frameTimer = null;
     }
     frameIndex = 0;
-    frameA.src = frames[frameIndex];
-    frameA.classList.add('is-active');
-    frameB.classList.remove('is-active');
+    frameImg.src = frames[frameIndex];
     sidePanel.classList.add('is-open');
-    let useA = true;
     frameTimer = setInterval(() => {
       frameIndex = (frameIndex + 1) % frames.length;
-      const show = useA ? frameB : frameA;
-      const hide = useA ? frameA : frameB;
-      show.src = frames[frameIndex];
-      show.classList.add('is-active');
-      hide.classList.remove('is-active');
-      useA = !useA;
+      const next = frames[frameIndex];
+      if (frameImg.decode) {
+        frameImg.src = next;
+        frameImg.decode().catch(() => {});
+      } else {
+        frameImg.src = next;
+      }
     }, intervalMs);
   }
 

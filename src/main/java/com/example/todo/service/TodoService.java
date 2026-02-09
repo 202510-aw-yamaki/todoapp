@@ -2,6 +2,7 @@
 
 import com.example.todo.entity.Todo;
 import com.example.todo.repository.TodoHistoryMapper;
+import com.example.todo.service.TodoAttachmentService;
 import com.example.todo.repository.TodoMapper;
 import com.example.todo.entity.TodoHistory;
 import com.example.todo.view.DayView;
@@ -29,12 +30,14 @@ public class TodoService {
     private final AuditLogService auditLogService;
     private final TodoHistoryMapper todoHistoryMapper;
     private final UserService userService;
+    private final TodoAttachmentService attachmentService;
 
-    public TodoService(TodoMapper todoMapper, AuditLogService auditLogService, TodoHistoryMapper todoHistoryMapper, UserService userService) {
+    public TodoService(TodoMapper todoMapper, AuditLogService auditLogService, TodoHistoryMapper todoHistoryMapper, UserService userService, TodoAttachmentService attachmentService) {
         this.todoMapper = todoMapper;
         this.auditLogService = auditLogService;
         this.todoHistoryMapper = todoHistoryMapper;
         this.userService = userService;
+        this.attachmentService = attachmentService;
     }
 
     @Transactional(readOnly = true)
@@ -100,6 +103,15 @@ public class TodoService {
     @org.springframework.security.access.prepost.PreAuthorize("@todoSecurityService.isOwnerOrAdmin(#id, principal)")
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
+        List<com.example.todo.entity.TodoAttachment> attachments = attachmentService.listByTodoId(id);
+        for (com.example.todo.entity.TodoAttachment attachment : attachments) {
+            try {
+                attachmentService.delete(attachment.getId());
+            } catch (java.io.IOException ex) {
+                throw new RuntimeException("Failed to delete attachment: " + attachment.getId(), ex);
+            }
+        }
+        todoHistoryMapper.deleteByTodoId(id);
         todoMapper.delete(id);
     }
 

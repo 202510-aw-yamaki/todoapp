@@ -9,4 +9,9 @@
         VALUES (#{todoId}, #{editorUserId}, #{editedAt}, #{note})
     </insert>
 
+    <delete id="deleteByTodoId">
+        DELETE FROM todo_history
+        WHERE todo_id = #{todoId}
+    </delete>
+
 </mapper>

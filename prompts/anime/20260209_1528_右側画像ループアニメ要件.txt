@@ -1,0 +1,52 @@
+﻿【指示】
+- モーダルの右半分に8枚の差分画像を自然にループ表示してアニメーションのように見せる
+- 左半分は既存モーダル内容を維持
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- 画面：Thymeleaf
+- 画像：1024x1536 の差分画像が8枚
+- モーダル：#layout-dialog（左半分に寄せ済み）
+
+【要件】
+- 右側に画像専用パネルを追加（モーダルの右半分）
+- 画像は一定間隔で切り替え、自然にループ（フェード推奨）
+- 画像はローカル配置（static/images/ など）
+- モーダルを閉じたらタイマーを停止
+
+【実装方針】
+1) HTML
+- `#layout-dialog` 内に右側パネル（例: `.modal-side`）を追加
+- 画像表示用の `img` 要素を1つ置き、JSで切替
+
+2) CSS
+- `#layout-dialog` を `display: flex` にして左/右の2カラム
+- 左: 既存の `.item.day` など
+- 右: `.modal-side` を 50% 幅
+- `img` は `object-fit: contain` で全体に収める
+
+3) JS
+- 画像配列を用意（8枚）
+- `setInterval` で一定間隔（例: 400ms?600ms）
+- 画像切替時に `opacity` を使ったフェード
+- `closeDialog()` 時に interval を clear
+
+【受け入れ条件】
+- モーダルを開くと右側で画像が連続表示され、自然にループする
+- 閉じたら停止する
+- 既存モーダル内容は壊れない
+
+【差分】
+- 変更したファイル:
+  - src/main/resources/templates/calendar.html
+  - src/main/resources/static/css/calendar.css
+  - src/main/resources/static/js/calendar-modal.js
+- 追加したファイル:
+  - src/main/resources/static/images/...(画像8枚)
+
+【確認手順】
+- 日付クリックでモーダル表示
+- 右側に画像アニメが出る
+- 閉じたら停止する
+

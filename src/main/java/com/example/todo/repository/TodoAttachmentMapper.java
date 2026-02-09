@@ -16,5 +16,7 @@ public interface TodoAttachmentMapper {
 
     int delete(@Param("id") Long id);
 
+    int deleteByTodoId(@Param("todoId") Long todoId);
+
     Long findTodoId(@Param("id") Long id);
 }

@@ -1,0 +1,57 @@
+﻿【指示】
+- 添付削除後に一覧の一括削除で「予期せぬエラー」が出る問題を調査し修正する
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- パッケージ名：com.example.todo
+- 画面：Thymeleaf
+- DB：H2
+- ORM：MyBatis
+
+【再現手順（例）】
+1. ToDoにファイルを添付
+2. 操作の編集ボタン → 編集画面で添付ファイルを削除
+3. 一覧に戻り該当ToDoをチェックして一括削除
+4. 予期せぬエラー
+
+【原因候補】
+- `todo` 削除時に `todo_attachment` / `todo_history` が残っていると FK で削除が失敗する
+- `TodoService.delete` が子テーブル削除やファイル削除を行っていない
+
+【修正方針】
+- ToDo削除時に以下の順で削除する
+  1) 添付ファイルの物理削除（stored_name）
+  2) `todo_attachment` を todo_id で削除
+  3) `todo_history` を todo_id で削除
+  4) `todo` 本体を削除
+- 一括削除も同じロジックを通す
+- トランザクションで一括削除を行う
+
+【具体的修正指示】
+1) `TodoAttachmentMapper` に `deleteByTodoId` を追加
+2) `TodoHistoryMapper` に `deleteByTodoId` を追加
+3) `TodoService.delete` を次の流れに変更
+   - `attachmentService.listByTodoId(id)` を取得し、各添付の `storedName` を削除
+   - `attachmentMapper.deleteByTodoId(id)`
+   - `todoHistoryMapper.deleteByTodoId(id)`
+   - `todoMapper.delete(id)`
+4) `deleteBatch` は `delete(id)` を回すだけでOK
+
+【差分】
+- 変更したファイル:
+  - src/main/java/com/example/todo/service/TodoService.java
+  - src/main/java/com/example/todo/repository/TodoAttachmentMapper.java
+  - src/main/java/com/example/todo/repository/TodoHistoryMapper.java
+  - src/main/resources/mapper/TodoAttachmentMapper.xml
+  - src/main/resources/mapper/TodoHistoryMapper.xml
+
+【受け入れ条件】
+- 添付削除後でも一括削除がエラーにならない
+- 添付ファイルの物理ファイルが残らない
+- 既存の削除機能に副作用がない
+
+【確認手順】
+- 添付→削除→一括削除でエラーが出ないこと
+- H2 で `todo_attachment` / `todo_history` に孤児レコードが残らないこと
+

@@ -43,4 +43,9 @@
         WHERE id = #{id}
     </delete>
 
+    <delete id="deleteByTodoId">
+        DELETE FROM todo_attachment
+        WHERE todo_id = #{todoId}
+    </delete>
+
 </mapper>

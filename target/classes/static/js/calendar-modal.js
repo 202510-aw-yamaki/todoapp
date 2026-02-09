@@ -70,7 +70,7 @@
     frameImg = document.createElement('img');
     frameImg.alt = 'assi animation';
     sidePanel.appendChild(frameImg);
-    document.body.appendChild(sidePanel);
+    dialog.appendChild(sidePanel);
   }
 
   function preloadFrames() {

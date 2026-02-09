@@ -143,8 +143,8 @@
 }
 
 #layout-dialog {
-    width: 50vw;
-    max-width: 50vw;
+    width: 66vw;
+    max-width: 66vw;
     height: 100vh;
     max-height: 100vh;
     border: none;
@@ -156,10 +156,12 @@
     left: 0;
     top: 0;
     background: #fff;
+    z-index: 5;
+    overflow: visible;
 }
 
 #layout-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.4);
+    background: transparent;
 }
 
 #layout-dialog .day-detail {
@@ -255,6 +257,8 @@
     justify-content: center;
     overflow: hidden;
     transform: translateX(-8px);
+    z-index: 9999;
+    pointer-events: none;
 }
 
 .modal-side.is-open {

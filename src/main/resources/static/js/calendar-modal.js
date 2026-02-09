@@ -24,6 +24,9 @@
   let activeButton = null;
   let frameTimer = null;
   let frameIndex = 0;
+  let sidePanel = null;
+  let frameA = null;
+  let frameB = null;
   const frames = [
     '/images/assi/assi_01.png',
     '/images/assi/assi_02.png',
@@ -34,8 +37,12 @@
     '/images/assi/assi_07.png',
     '/images/assi/assi_08.png'
   ];
+  preloadFrames();
 
   function closeDialog() {
+    if (sidePanel) {
+      sidePanel.classList.remove('is-open');
+    }
     if (frameTimer) {
       clearInterval(frameTimer);
       frameTimer = null;
@@ -47,6 +54,7 @@
       dialog.close();
     }
     dialog.innerHTML = '';
+    dialog.classList.remove('is-open');
     if (activeButton) {
       activeButton.focus();
     }
@@ -54,8 +62,33 @@
     activeButton = null;
   }
 
-  function startFrameLoop(img, intervalMs) {
-    if (!img) {
+  function ensureSidePanel() {
+    if (sidePanel) {
+      return;
+    }
+    sidePanel = document.createElement('div');
+    sidePanel.className = 'modal-side';
+    frameA = document.createElement('img');
+    frameB = document.createElement('img');
+    frameA.className = 'frame frame-a';
+    frameB.className = 'frame frame-b';
+    frameA.alt = 'assi animation';
+    frameB.alt = 'assi animation';
+    sidePanel.appendChild(frameA);
+    sidePanel.appendChild(frameB);
+    document.body.appendChild(sidePanel);
+  }
+
+  function preloadFrames() {
+    frames.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }
+
+  function startFrameLoop(intervalMs) {
+    ensureSidePanel();
+    if (!frameA || !frameB) {
       return;
     }
     if (frameTimer) {
@@ -63,17 +96,19 @@
       frameTimer = null;
     }
     frameIndex = 0;
-    img.style.opacity = '1';
-    img.src = frames[frameIndex];
+    frameA.src = frames[frameIndex];
+    frameA.classList.add('is-active');
+    frameB.classList.remove('is-active');
+    sidePanel.classList.add('is-open');
+    let useA = true;
     frameTimer = setInterval(() => {
-      img.style.opacity = '0';
-      setTimeout(() => {
-        frameIndex = (frameIndex + 1) % frames.length;
-        img.src = frames[frameIndex];
-        img.onload = () => {
-          img.style.opacity = '1';
-        };
-      }, 150);
+      frameIndex = (frameIndex + 1) % frames.length;
+      const show = useA ? frameB : frameA;
+      const hide = useA ? frameA : frameB;
+      show.src = frames[frameIndex];
+      show.classList.add('is-active');
+      hide.classList.remove('is-active');
+      useA = !useA;
     }, intervalMs);
   }
 
@@ -146,14 +181,7 @@
     dialog.innerHTML = '';
     dialog.appendChild(clone);
 
-    const side = document.createElement('div');
-    side.className = 'modal-side';
-    const sideImg = document.createElement('img');
-    sideImg.alt = 'assi animation';
-    side.appendChild(sideImg);
-    dialog.appendChild(side);
-
-    startFrameLoop(sideImg, 500);
+    startFrameLoop(500);
 
     const closeTarget = clone.querySelector('.day-header');
     if (closeTarget) {

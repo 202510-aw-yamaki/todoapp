@@ -1,0 +1,25 @@
+﻿【修正経過】
+1) 右側画像がモーダル内に出ていたため、右側パネルを dialog 外（body 直下）の固定要素に変更
+   - `.modal-side` を `position: fixed; right:0; top:0; width:50vw; height:100vh;` に変更
+   - `#layout-dialog` は `position: fixed; left:0; width:50vw; height:100vh;` に変更
+
+2) 画像切替の点滅対策
+   - 画像を2枚重ね（frameA/frameB）でクロスフェード
+   - 事前に `new Image()` で全フレームをプリロード
+
+3) 閉じた後の白い跡対策
+   - `closeDialog()` で `dialog.classList.remove('is-open')`
+   - 右側パネルの `is-open` を解除して非表示化
+   - タイマー停止
+
+【変更ファイル】
+- src/main/resources/static/css/calendar.css
+- src/main/resources/static/js/calendar-modal.js
+- target/classes/static/css/calendar.css
+- target/classes/static/js/calendar-modal.js
+
+【確認ポイント】
+- 右側画像が画面右半分に固定表示される
+- 画像切替が点滅せず滑らか
+- 閉じた後に白い跡が残らない
+

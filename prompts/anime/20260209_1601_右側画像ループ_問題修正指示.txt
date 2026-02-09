@@ -1,0 +1,40 @@
+﻿【問題点】
+1) 画像切り替え時に点滅して見える
+2) 右側画像が「画面右半分」ではなく「モーダル内の右半分」に出ている
+3) モーダルを閉じた後に白い跡が残る（大きく表示された痕跡が残る）
+
+【原因候補】
+1) フェード切替のタイミングが短く、opacity=0 → src差し替えでチラつく
+2) 画像パネルを `#layout-dialog` 内に追加しているため、画面右半分ではなくモーダル内に表示される
+3) `dialog` の内容が `innerHTML=''` で消えても、`dialog` 本体のサイズや背景が残っている
+
+【修正方針】
+- 点滅対策: 画像プリロード + クロスフェード用に2枚重ねる
+- 右半分表示: モーダルの外に固定の「右側パネル」を追加し、dialog とは別DOMにする
+- モーダル跡: `dialog.close()` 後に `dialog` の `style` をリセットし、`is-open` クラスも確実に除去
+
+【具体的修正指示】
+1) 画像を2枚重ねる（.frame-a / .frame-b）
+   - setInterval で片方を表示、片方を非表示に切り替える
+   - 事前に全画像を `new Image()` でプリロード
+
+2) 右側パネルは `body` 直下に固定配置
+   - `.modal-side` は `position: fixed; right: 0; top: 0; width: 50vw; height: 100vh;`
+   - `#layout-dialog` は左半分に固定 (`left: 0; width: 50vw;`)
+
+3) closeDialog で以下を実行
+   - `dialog.classList.remove('is-open')`
+   - `dialog.style.cssText = ''` (必要なら)
+   - `.modal-side` を非表示 or DOM削除
+   - タイマー停止
+
+【変更対象】
+- src/main/resources/static/css/calendar.css
+- src/main/resources/static/js/calendar-modal.js
+- 必要なら templates/index.html などで右側パネル追加
+
+【受け入れ条件】
+- 点滅がほぼ解消され、自然に切り替わる
+- 右側画像は画面右半分に固定表示される
+- モーダルを閉じても白い跡が残らない
+

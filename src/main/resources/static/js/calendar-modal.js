@@ -22,8 +22,24 @@
 
   let activeCell = null;
   let activeButton = null;
+  let frameTimer = null;
+  let frameIndex = 0;
+  const frames = [
+    '/images/assi/assi_01.png',
+    '/images/assi/assi_02.png',
+    '/images/assi/assi_03.png',
+    '/images/assi/assi_04.png',
+    '/images/assi/assi_05.png',
+    '/images/assi/assi_06.png',
+    '/images/assi/assi_07.png',
+    '/images/assi/assi_08.png'
+  ];
 
   function closeDialog() {
+    if (frameTimer) {
+      clearInterval(frameTimer);
+      frameTimer = null;
+    }
     if (activeCell) {
       activeCell.classList.remove('is-open');
     }
@@ -36,6 +52,29 @@
     }
     activeCell = null;
     activeButton = null;
+  }
+
+  function startFrameLoop(img, intervalMs) {
+    if (!img) {
+      return;
+    }
+    if (frameTimer) {
+      clearInterval(frameTimer);
+      frameTimer = null;
+    }
+    frameIndex = 0;
+    img.style.opacity = '1';
+    img.src = frames[frameIndex];
+    frameTimer = setInterval(() => {
+      img.style.opacity = '0';
+      setTimeout(() => {
+        frameIndex = (frameIndex + 1) % frames.length;
+        img.src = frames[frameIndex];
+        img.onload = () => {
+          img.style.opacity = '1';
+        };
+      }, 150);
+    }, intervalMs);
   }
 
   dialog.addEventListener('click', (e) => {
@@ -106,6 +145,15 @@
 
     dialog.innerHTML = '';
     dialog.appendChild(clone);
+
+    const side = document.createElement('div');
+    side.className = 'modal-side';
+    const sideImg = document.createElement('img');
+    sideImg.alt = 'assi animation';
+    side.appendChild(sideImg);
+    dialog.appendChild(side);
+
+    startFrameLoop(sideImg, 500);
 
     const closeTarget = clone.querySelector('.day-header');
     if (closeTarget) {

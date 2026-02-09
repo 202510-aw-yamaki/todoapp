@@ -249,11 +249,12 @@
     top: 0;
     width: 50vw;
     height: 100vh;
-    background: #000;
+    background: transparent;
     display: none;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    transform: translateX(-8px);
 }
 
 .modal-side.is-open {

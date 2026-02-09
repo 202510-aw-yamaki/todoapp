@@ -127,6 +127,35 @@
         dialog.showModal();
         dialog.classList.add('is-open');
       });
+      try {
+        if (window.anime && typeof window.anime.animate === 'function') {
+          window.anime.animate({
+            targets: clone,
+            scale: [0.95, 1],
+            opacity: [0, 1],
+            duration,
+            easing: 'easeOutCubic'
+          });
+        } else if (typeof window.anime === 'function') {
+          window.anime({
+            targets: clone,
+            scale: [0.95, 1],
+            opacity: [0, 1],
+            duration,
+            easing: 'easeOutCubic'
+          });
+        } else if (clone && typeof clone.animate === 'function') {
+          clone.animate(
+            [
+              { transform: 'scale(0.95)', opacity: 0 },
+              { transform: 'scale(1)', opacity: 1 }
+            ],
+            { duration, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'both' }
+          );
+        }
+      } catch (e) {
+        console.warn('open animation skipped:', e);
+      }
       if (typeof layout.transition === 'function') {
         layout.transition({ duration });
       }

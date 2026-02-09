@@ -1,0 +1,40 @@
+﻿【指示】
+- anime.createLayout の transition が使えないため、自前アニメーションで拡大演出を実装する
+
+【前提】
+- Java：17
+- Spring Boot：3.x
+- パッケージ名：com.example.todo
+- 画面：Thymeleaf
+- JS：static/js/calendar-modal.js
+
+【要件】
+- 既存の createLayout + showModal は維持
+- transition が undefined の環境でも動くように `anime()` で拡大アニメを実装
+- セル→モーダルへ拡大する印象（scale/opacity）を出す
+
+【変更内容】
+- `static/js/calendar-modal.js` の `layout.update(...)` 直後に以下を追加
+
+```js
+window.anime({
+  targets: clone,
+  scale: [0.95, 1],
+  opacity: [0, 1],
+  duration,
+  easing: 'easeOutCubic'
+});
+```
+
+【受け入れ条件】
+- クリック時にセルが拡大してモーダルに遷移する視覚効果が出る
+- anime の transition が無い環境でもアニメが動く
+
+【差分】
+- 変更したファイル:
+  - src/main/resources/static/js/calendar-modal.js
+
+【確認手順】
+- 日付をクリックしてモーダルが開く
+- 拡大アニメーションが出る
+
